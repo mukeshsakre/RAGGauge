@@ -1,0 +1,2488 @@
+{
+  "id": "8690336d-1bb4-4ac9-8df5-e5ea646046d4",
+  "schema_version": 1,
+  "baseline_run_id": "fixture-baseline",
+  "candidate_run_id": "fixture-candidate",
+  "dataset_version": "fixture-dataset-v1",
+  "created_at": "2026-09-21T06:40:16.314467Z",
+  "actor_id": "97a8d2da-9f03-4e01-be67-d520b0adb9ed",
+  "input_fingerprints": {
+    "baseline": "5b743f444c9c117a4eb55e2e41ed82ac7a6093450094e261e4872ee4915fbd80",
+    "candidate": "0e9b136a35af1a6688a0bbf8152ba64abe037323cb2ad18a5b5a020c7c7dc9e6"
+  },
+  "policy": {
+    "version": "1",
+    "materiality": 0.02,
+    "per_case_materiality": 0.05,
+    "relative_materiality": 0.1,
+    "absolute_operational_tolerance": null,
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 42,
+    "minimum_ci_cases": 10,
+    "high_confidence_cases": 30,
+    "agreement": 0.7,
+    "metric_tolerances": {}
+  },
+  "objective": null,
+  "configuration_versions": {
+    "platform": "0b540c05-75b7-45b8-8dc4-8d1b3c2703f9",
+    "workspace": "8e083719-2494-49de-96bc-dc939833fd6d"
+  },
+  "configuration_diff": [
+    {
+      "id": "37c228cb-7095-49d3-a419-3788c7592051",
+      "path": "retrieval.dense.top_k",
+      "group": "dense retrieval",
+      "domain": "application",
+      "before": 20,
+      "after": 5,
+      "before_present": true,
+      "after_present": true,
+      "semantic_identity": "retrieval.dense.top_k"
+    }
+  ],
+  "change_isolation": "ISOLATED_CHANGE",
+  "compatibility": [],
+  "metric_deltas": [
+    {
+      "id": "a700e0b4-05e9-46dc-905d-81d09d98c614",
+      "name": "ndcg@5",
+      "stage": "DENSE_RETRIEVAL",
+      "evaluator_id": "deterministic-v1",
+      "definition_version": "1",
+      "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+      "higher_is_better": true,
+      "baseline_coverage": {
+        "SUCCESS": 10
+      },
+      "candidate_coverage": {
+        "SUCCESS": 10
+      },
+      "paired_case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "excluded_cases": {},
+      "baseline_mean": 0.9197207891481876,
+      "candidate_mean": 0.4598603945740938,
+      "delta": -0.4598603945740938,
+      "ci": [
+        -0.7357766313185501,
+        -0.18394415782963752
+      ],
+      "per_case": {
+        "q00": [
+          0.9197207891481876,
+          0.0
+        ],
+        "q01": [
+          0.9197207891481876,
+          0.0
+        ],
+        "q02": [
+          0.9197207891481876,
+          0.0
+        ],
+        "q03": [
+          0.9197207891481876,
+          0.0
+        ],
+        "q04": [
+          0.9197207891481876,
+          0.0
+        ],
+        "q05": [
+          0.9197207891481876,
+          0.9197207891481876
+        ],
+        "q06": [
+          0.9197207891481876,
+          0.9197207891481876
+        ],
+        "q07": [
+          0.9197207891481876,
+          0.9197207891481876
+        ],
+        "q08": [
+          0.9197207891481876,
+          0.9197207891481876
+        ],
+        "q09": [
+          0.9197207891481876,
+          0.9197207891481876
+        ]
+      },
+      "threshold": 0.02,
+      "slices": {
+        "category:product-code": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04"
+          ],
+          "denominator": 5,
+          "delta": -0.9197207891481876
+        },
+        "difficulty:easy": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04",
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 10,
+          "delta": -0.4598603945740938
+        },
+        "category:policy": {
+          "case_ids": [
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 5,
+          "delta": 0.0
+        }
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "e051a5d2-d9cb-4847-bc18-e83c1549b1b8",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec5e01c4-6224-44fd-8f17-8f11614060a1",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "694809cc-452e-43d6-9983-c23816e2981c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "49d68bf8-34a5-44c2-bbc2-792d0509c8d9",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "87f12dd5-fb9f-4eee-b400-a3ad0f0198cb",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "df65151c-d332-475f-bfc8-a1242a605ca0",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "b59530c2-467c-40ec-843a-2e5371fe7017",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f27d65c-91e2-44de-8c93-12ef9057491a",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8a66cb9d-c23e-4fbd-aa3f-4a1ee4983d84",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e1b06c2a-f773-4e26-990f-ed8d6757b478",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "b117d457-c23c-401b-9942-0ac3fcdaeee9",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "63bcc695-8842-409f-b5a9-20968e27cfaa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "12eff605-5d54-40c0-9428-9a7c38539be7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "66c0f5d3-5d60-40c6-bb31-8133df6ea856",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "f4cec27f-6bbd-4bc2-a92f-dfad18422a6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "75f2cf0b-7add-4bac-a654-dc1ea236b3e5",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "387e2582-d20e-4026-999d-1b3a63523e3c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "3d3f6dc7-672a-4ae6-9568-ed2e983eca6e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a2351b23-b730-4986-823e-0d9a6518f1c6",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "6d844104-b084-43a8-8007-eeaeef54477c",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "7930b9dc-f25e-48e9-9cac-c876519c7a3e",
+      "name": "precision@5",
+      "stage": "DENSE_RETRIEVAL",
+      "evaluator_id": "deterministic-v1",
+      "definition_version": "1",
+      "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+      "higher_is_better": true,
+      "baseline_coverage": {
+        "SUCCESS": 10
+      },
+      "candidate_coverage": {
+        "SUCCESS": 10
+      },
+      "paired_case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "excluded_cases": {},
+      "baseline_mean": 0.4,
+      "candidate_mean": 0.2,
+      "delta": -0.2,
+      "ci": [
+        -0.32,
+        -0.08
+      ],
+      "per_case": {
+        "q00": [
+          0.4,
+          0.0
+        ],
+        "q01": [
+          0.4,
+          0.0
+        ],
+        "q02": [
+          0.4,
+          0.0
+        ],
+        "q03": [
+          0.4,
+          0.0
+        ],
+        "q04": [
+          0.4,
+          0.0
+        ],
+        "q05": [
+          0.4,
+          0.4
+        ],
+        "q06": [
+          0.4,
+          0.4
+        ],
+        "q07": [
+          0.4,
+          0.4
+        ],
+        "q08": [
+          0.4,
+          0.4
+        ],
+        "q09": [
+          0.4,
+          0.4
+        ]
+      },
+      "threshold": 0.02,
+      "slices": {
+        "category:product-code": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04"
+          ],
+          "denominator": 5,
+          "delta": -0.4
+        },
+        "difficulty:easy": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04",
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 10,
+          "delta": -0.2
+        },
+        "category:policy": {
+          "case_ids": [
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 5,
+          "delta": 0.0
+        }
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "e278a9c2-dd2d-4358-ae0f-969f262ba103",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "5f55b6bb-c360-4185-bbbc-301223937a46",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bf281a2a-e0db-466c-87ea-0f490d6a2507",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "55cbc18e-5299-467e-a648-906459dc55b2",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e5afba36-1d1b-4444-a0b3-26cf71226b1a",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d6ea3995-df91-45a8-87d5-1f73a5ff3618",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "534fc04b-a587-4061-9f44-4f84c8656755",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "7a444697-bd9a-40fd-8b2c-c701d3195645",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a0286ac8-7521-46ee-b702-f619c09be7b7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "9aa566c7-e354-4056-9e0c-0609306a9359",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "26e08886-84d7-4de3-b581-cc5c85389162",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d9516898-955d-401c-b317-52e469fce911",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "0a3c60f3-ca7a-4336-beb2-0484eec7a196",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2993fc85-26d6-440d-87d0-e9a1fe8666cd",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1d112c11-adea-48d1-9964-68c30b514118",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "9081b10c-e064-45e9-a396-25bdf0365217",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "382aad75-3161-48b7-b8f2-f9d87e6f63b7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "5c691857-abc4-429c-b83b-f4a46664f659",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2667a680-7d76-4313-b581-e53aece59807",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d3e425aa-c0e8-418d-9c38-fee145f9a479",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "f670eaa4-b7f7-4517-bb39-0c8471207a93",
+      "name": "recall@5",
+      "stage": "DENSE_RETRIEVAL",
+      "evaluator_id": "deterministic-v1",
+      "definition_version": "1",
+      "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+      "higher_is_better": true,
+      "baseline_coverage": {
+        "SUCCESS": 10
+      },
+      "candidate_coverage": {
+        "SUCCESS": 10
+      },
+      "paired_case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "excluded_cases": {},
+      "baseline_mean": 1.0,
+      "candidate_mean": 0.5,
+      "delta": -0.5,
+      "ci": [
+        -0.8,
+        -0.2
+      ],
+      "per_case": {
+        "q00": [
+          1.0,
+          0.0
+        ],
+        "q01": [
+          1.0,
+          0.0
+        ],
+        "q02": [
+          1.0,
+          0.0
+        ],
+        "q03": [
+          1.0,
+          0.0
+        ],
+        "q04": [
+          1.0,
+          0.0
+        ],
+        "q05": [
+          1.0,
+          1.0
+        ],
+        "q06": [
+          1.0,
+          1.0
+        ],
+        "q07": [
+          1.0,
+          1.0
+        ],
+        "q08": [
+          1.0,
+          1.0
+        ],
+        "q09": [
+          1.0,
+          1.0
+        ]
+      },
+      "threshold": 0.02,
+      "slices": {
+        "category:product-code": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04"
+          ],
+          "denominator": 5,
+          "delta": -1.0
+        },
+        "difficulty:easy": {
+          "case_ids": [
+            "q00",
+            "q01",
+            "q02",
+            "q03",
+            "q04",
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 10,
+          "delta": -0.5
+        },
+        "category:policy": {
+          "case_ids": [
+            "q05",
+            "q06",
+            "q07",
+            "q08",
+            "q09"
+          ],
+          "denominator": 5,
+          "delta": 0.0
+        }
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "533badd2-ccfa-4950-9185-df4f73da0ee3",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "65166f8b-dc0b-41e1-bf0b-757ed0c32db4",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "c33bdf40-71c0-447e-8fb2-0ebccecf1d50",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "61652964-dcdd-4f04-a64a-4fd63fe0f1aa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f9d9cb8-28ae-4dd3-af53-0e11423f044b",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a6adf217-d83f-4c68-bad5-9bd3e646ad59",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec109916-28fb-4b45-8c44-0fcb3c8e2bbd",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e11bfb57-2831-4b2a-bbcc-9b647c582be8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "4830eb62-799a-4cea-bbe1-f21b818bfc6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "237497bc-349b-4553-93ec-f70562d31be3",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "abbb4a3b-ed4d-4177-a486-47d2e482c144",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "17210c2c-817b-42cb-864e-1e83a607998e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "33c7431c-d330-4be6-a018-dd612b56cbe7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2ad96bcb-60ab-4879-ae72-daac68fcb7c8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "82cf2879-30d3-4520-9e75-ee7b6008fdf4",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bde26801-e503-4967-9afb-530916dec310",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d86fd79e-bb82-4e54-928d-e9ebef8883f5",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fbd92852-b88e-4992-8f51-476dbf94d35c",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fc207d41-5346-463e-8dc0-37756ee4c52d",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8651a004-d641-4229-a04b-77c13838b546",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "c030bde7-fa14-4296-802c-8f06734bc248",
+      "kind": "METRIC_DELTA",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": "ndcg@5",
+      "case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "baseline": 0.9197207891481876,
+      "candidate": 0.4598603945740938,
+      "delta": -0.4598603945740938,
+      "details": {
+        "denominator": 10,
+        "threshold": 0.02,
+        "ci": [
+          -0.7357766313185501,
+          -0.18394415782963752
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "e051a5d2-d9cb-4847-bc18-e83c1549b1b8",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec5e01c4-6224-44fd-8f17-8f11614060a1",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "694809cc-452e-43d6-9983-c23816e2981c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "49d68bf8-34a5-44c2-bbc2-792d0509c8d9",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "87f12dd5-fb9f-4eee-b400-a3ad0f0198cb",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "df65151c-d332-475f-bfc8-a1242a605ca0",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "b59530c2-467c-40ec-843a-2e5371fe7017",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f27d65c-91e2-44de-8c93-12ef9057491a",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8a66cb9d-c23e-4fbd-aa3f-4a1ee4983d84",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e1b06c2a-f773-4e26-990f-ed8d6757b478",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "b117d457-c23c-401b-9942-0ac3fcdaeee9",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "63bcc695-8842-409f-b5a9-20968e27cfaa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "12eff605-5d54-40c0-9428-9a7c38539be7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "66c0f5d3-5d60-40c6-bb31-8133df6ea856",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "f4cec27f-6bbd-4bc2-a92f-dfad18422a6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "75f2cf0b-7add-4bac-a654-dc1ea236b3e5",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "387e2582-d20e-4026-999d-1b3a63523e3c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "3d3f6dc7-672a-4ae6-9568-ed2e983eca6e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a2351b23-b730-4986-823e-0d9a6518f1c6",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "6d844104-b084-43a8-8007-eeaeef54477c",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "a80c251b-ba1c-4c49-b389-3d5be5b11b37",
+      "kind": "METRIC_DELTA",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": "precision@5",
+      "case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "baseline": 0.4,
+      "candidate": 0.2,
+      "delta": -0.2,
+      "details": {
+        "denominator": 10,
+        "threshold": 0.02,
+        "ci": [
+          -0.32,
+          -0.08
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "e278a9c2-dd2d-4358-ae0f-969f262ba103",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "5f55b6bb-c360-4185-bbbc-301223937a46",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bf281a2a-e0db-466c-87ea-0f490d6a2507",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "55cbc18e-5299-467e-a648-906459dc55b2",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e5afba36-1d1b-4444-a0b3-26cf71226b1a",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d6ea3995-df91-45a8-87d5-1f73a5ff3618",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "534fc04b-a587-4061-9f44-4f84c8656755",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "7a444697-bd9a-40fd-8b2c-c701d3195645",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a0286ac8-7521-46ee-b702-f619c09be7b7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "9aa566c7-e354-4056-9e0c-0609306a9359",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "26e08886-84d7-4de3-b581-cc5c85389162",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d9516898-955d-401c-b317-52e469fce911",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "0a3c60f3-ca7a-4336-beb2-0484eec7a196",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2993fc85-26d6-440d-87d0-e9a1fe8666cd",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1d112c11-adea-48d1-9964-68c30b514118",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "9081b10c-e064-45e9-a396-25bdf0365217",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "382aad75-3161-48b7-b8f2-f9d87e6f63b7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "5c691857-abc4-429c-b83b-f4a46664f659",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2667a680-7d76-4313-b581-e53aece59807",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d3e425aa-c0e8-418d-9c38-fee145f9a479",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "c2b9dd00-5555-40cc-95a9-f81baf3e9396",
+      "kind": "METRIC_DELTA",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": "recall@5",
+      "case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "baseline": 1.0,
+      "candidate": 0.5,
+      "delta": -0.5,
+      "details": {
+        "denominator": 10,
+        "threshold": 0.02,
+        "ci": [
+          -0.8,
+          -0.2
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "metric",
+          "record_id": "533badd2-ccfa-4950-9185-df4f73da0ee3",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "65166f8b-dc0b-41e1-bf0b-757ed0c32db4",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "c33bdf40-71c0-447e-8fb2-0ebccecf1d50",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "61652964-dcdd-4f04-a64a-4fd63fe0f1aa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f9d9cb8-28ae-4dd3-af53-0e11423f044b",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a6adf217-d83f-4c68-bad5-9bd3e646ad59",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec109916-28fb-4b45-8c44-0fcb3c8e2bbd",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e11bfb57-2831-4b2a-bbcc-9b647c582be8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "4830eb62-799a-4cea-bbe1-f21b818bfc6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "237497bc-349b-4553-93ec-f70562d31be3",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "abbb4a3b-ed4d-4177-a486-47d2e482c144",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "17210c2c-817b-42cb-864e-1e83a607998e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "33c7431c-d330-4be6-a018-dd612b56cbe7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2ad96bcb-60ab-4879-ae72-daac68fcb7c8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "82cf2879-30d3-4520-9e75-ee7b6008fdf4",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bde26801-e503-4967-9afb-530916dec310",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d86fd79e-bb82-4e54-928d-e9ebef8883f5",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fbd92852-b88e-4992-8f51-476dbf94d35c",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fc207d41-5346-463e-8dc0-37756ee4c52d",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8651a004-d641-4229-a04b-77c13838b546",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "72655c2e-5bb0-41d9-9fb0-74bff019b192",
+      "kind": "LATENCY",
+      "stage": null,
+      "metric": null,
+      "case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "baseline": 20.0,
+      "candidate": 20.0,
+      "delta": 0.0,
+      "details": {
+        "label": "APPLICATION_TOTAL",
+        "denominator": 10,
+        "excluded": {},
+        "per_case": {
+          "q00": [
+            20.0,
+            20.0
+          ],
+          "q04": [
+            20.0,
+            20.0
+          ],
+          "q09": [
+            20.0,
+            20.0
+          ],
+          "q01": [
+            20.0,
+            20.0
+          ],
+          "q05": [
+            20.0,
+            20.0
+          ],
+          "q07": [
+            20.0,
+            20.0
+          ],
+          "q08": [
+            20.0,
+            20.0
+          ],
+          "q02": [
+            20.0,
+            20.0
+          ],
+          "q06": [
+            20.0,
+            20.0
+          ],
+          "q03": [
+            20.0,
+            20.0
+          ]
+        },
+        "material_increase": false,
+        "baseline_p95": 20.0,
+        "candidate_p95": 20.0
+      },
+      "evidence_refs": [
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q00",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q01",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q02",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q03",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q04",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q05",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q06",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q07",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q08",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q09",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q00",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q01",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q02",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q03",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q04",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q05",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q06",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q07",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q08",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q09",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "61163b77-1ac6-4212-a2bd-ba5d43a04fd6",
+      "kind": "LATENCY",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q00",
+        "q01",
+        "q02",
+        "q03",
+        "q04",
+        "q05",
+        "q06",
+        "q07",
+        "q08",
+        "q09"
+      ],
+      "baseline": 10.0,
+      "candidate": 10.0,
+      "delta": 0.0,
+      "details": {
+        "label": "DENSE_RETRIEVAL",
+        "denominator": 10,
+        "excluded": {},
+        "per_case": {
+          "q00": [
+            10.0,
+            10.0
+          ],
+          "q04": [
+            10.0,
+            10.0
+          ],
+          "q09": [
+            10.0,
+            10.0
+          ],
+          "q01": [
+            10.0,
+            10.0
+          ],
+          "q05": [
+            10.0,
+            10.0
+          ],
+          "q07": [
+            10.0,
+            10.0
+          ],
+          "q08": [
+            10.0,
+            10.0
+          ],
+          "q02": [
+            10.0,
+            10.0
+          ],
+          "q06": [
+            10.0,
+            10.0
+          ],
+          "q03": [
+            10.0,
+            10.0
+          ]
+        },
+        "material_increase": false,
+        "baseline_p95": 10.0,
+        "candidate_p95": 10.0
+      },
+      "evidence_refs": [
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q00",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q01",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q02",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q03",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q04",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q05",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q06",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q07",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q08",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-baseline-q09",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q00",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q01",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q02",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q03",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q04",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q05",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q06",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q07",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q08",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "trace",
+          "record_id": "trace-candidate-q09",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "163a2ac3-cdda-4b6e-a905-91380da7c0c5",
+      "kind": "EVIDENCE_LOSS",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q00"
+      ],
+      "baseline": null,
+      "candidate": null,
+      "delta": null,
+      "details": {
+        "evidence_ids": [
+          "gold-A"
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q00",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q00",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "b35d147a-b3fb-404a-957b-832c6d4b7d7c",
+      "kind": "EVIDENCE_LOSS",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q01"
+      ],
+      "baseline": null,
+      "candidate": null,
+      "delta": null,
+      "details": {
+        "evidence_ids": [
+          "gold-A"
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q01",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q01",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "6745de50-e82c-4868-83cb-bea7cc6003e8",
+      "kind": "EVIDENCE_LOSS",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q02"
+      ],
+      "baseline": null,
+      "candidate": null,
+      "delta": null,
+      "details": {
+        "evidence_ids": [
+          "gold-A"
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q02",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q02",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "95337e02-16a1-44f4-a800-faa5351178d2",
+      "kind": "EVIDENCE_LOSS",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q03"
+      ],
+      "baseline": null,
+      "candidate": null,
+      "delta": null,
+      "details": {
+        "evidence_ids": [
+          "gold-A"
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q03",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q03",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "737d4972-a261-4bab-81c7-f1cbaea7ce13",
+      "kind": "EVIDENCE_LOSS",
+      "stage": "DENSE_RETRIEVAL",
+      "metric": null,
+      "case_ids": [
+        "q04"
+      ],
+      "baseline": null,
+      "candidate": null,
+      "delta": null,
+      "details": {
+        "evidence_ids": [
+          "gold-A"
+        ]
+      },
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q04",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q04",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    }
+  ],
+  "diagnoses": [
+    {
+      "id": "b86e1eac-68c4-4f78-8c61-e7a7184bce5b",
+      "rule_id": "retrieval_recall",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "DETECTED",
+      "stages": [
+        "DENSE_RETRIEVAL"
+      ],
+      "confidence": "MEDIUM",
+      "factors": {
+        "paired_sample_size": 10,
+        "change_isolation": "ISOLATED_CHANGE",
+        "relevant_configuration_changes": 1,
+        "aligned_setting": true,
+        "judge_disagreement": null,
+        "repeated_run_evidence": null,
+        "effect": -0.5,
+        "interval": [
+          -0.8,
+          -0.2
+        ],
+        "directional_agreement": 1.0,
+        "direct_stage_evidence": true,
+        "upstream_unobserved": false,
+        "self_judged": false,
+        "unresolved_evaluator_identity": false,
+        "other_confounders": false
+      },
+      "limitations": [
+        "Diagnostic association, not causal proof"
+      ],
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q00",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q00",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q01",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q01",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q02",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q02",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q03",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q03",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q04",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q04",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "configdiff",
+          "record_id": "37c228cb-7095-49d3-a419-3788c7592051",
+          "run_id": null,
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "533badd2-ccfa-4950-9185-df4f73da0ee3",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "65166f8b-dc0b-41e1-bf0b-757ed0c32db4",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "c33bdf40-71c0-447e-8fb2-0ebccecf1d50",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "61652964-dcdd-4f04-a64a-4fd63fe0f1aa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f9d9cb8-28ae-4dd3-af53-0e11423f044b",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a6adf217-d83f-4c68-bad5-9bd3e646ad59",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec109916-28fb-4b45-8c44-0fcb3c8e2bbd",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e11bfb57-2831-4b2a-bbcc-9b647c582be8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "4830eb62-799a-4cea-bbe1-f21b818bfc6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "237497bc-349b-4553-93ec-f70562d31be3",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "abbb4a3b-ed4d-4177-a486-47d2e482c144",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "17210c2c-817b-42cb-864e-1e83a607998e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "33c7431c-d330-4be6-a018-dd612b56cbe7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2ad96bcb-60ab-4879-ae72-daac68fcb7c8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "82cf2879-30d3-4520-9e75-ee7b6008fdf4",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bde26801-e503-4967-9afb-530916dec310",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d86fd79e-bb82-4e54-928d-e9ebef8883f5",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fbd92852-b88e-4992-8f51-476dbf94d35c",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fc207d41-5346-463e-8dc0-37756ee4c52d",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8651a004-d641-4229-a04b-77c13838b546",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ]
+    },
+    {
+      "id": "221e5394-f5ae-4ebd-add6-97b5995aca79",
+      "rule_id": "hybrid_ineffective",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Negligible quality gain with attributable measured overhead"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "17f9e38a-540b-4081-a16f-f3dc4eeff5b2",
+      "rule_id": "irrelevant_context",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Stable recall with worsening context precision"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "9ac12427-dc80-4894-9e25-6812465a7b5e",
+      "rule_id": "reranker_ineffective",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Negligible quality gain with attributable measured overhead"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "8b2ab015-b0ae-4516-ae67-1192fbd313be",
+      "rule_id": "cost_regression",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Stable measured quality with higher comparable application cost"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "d5ff51e7-b5a9-4c29-b9bc-fa0e00308e4c",
+      "rule_id": "reranker_degradation",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Stable input and degraded reranked output"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "da554c69-93bb-4f9c-b782-bda5e696a7f2",
+      "rule_id": "latency_regression",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Stage or total latency increase"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "1d593a7c-497e-4cd3-86fa-68efadf8a9f3",
+      "rule_id": "retrieval_precision",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Precision loss while recall remains stable"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "4d66657b-f821-42bc-b739-93054ff7f3b4",
+      "rule_id": "context_truncation",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Retrieved evidence excluded by observed truncation"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "05fe12db-70ea-4c38-bfcc-8e8d88727f27",
+      "rule_id": "generation_degradation",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Comparable exact context and worse answer quality"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "f40560cb-7c74-4e5c-98e6-efffa09712be",
+      "rule_id": "embedding_regression",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Changed embeddings, dense loss and stable lexical quality"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "ca444f48-6634-42e9-afac-cb82448c9cd6",
+      "rule_id": "metric_coverage",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "More metric errors or missing evidence"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "e8cd3eac-a2e0-42dd-8172-af14c4b97c6c",
+      "rule_id": "instrumentation",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Unintentional loss of external trace evidence"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    },
+    {
+      "id": "77af66a8-07ba-41c9-b37f-eb320f86dbfd",
+      "rule_id": "chunking_regression",
+      "rule_version": "1",
+      "policy_version": "1",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "stages": [],
+      "confidence": "INSUFFICIENT_EVIDENCE",
+      "factors": {
+        "required_signal": "Changed chunking and mapped evidence loss"
+      },
+      "limitations": [
+        "Required comparable evidence or material signal was not established"
+      ],
+      "evidence_refs": []
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "3410d749-f097-4f1c-96de-baef5badc42f",
+      "kind": "CONTROLLED_EXPERIMENT",
+      "status": "PROPOSED",
+      "objective": "Test retrieval_recall by reverting one factor",
+      "base_run_id": "fixture-candidate",
+      "recommended_run_id": null,
+      "overrides": {
+        "retrieval.dense.top_k": 20
+      },
+      "remove_paths": [],
+      "alternatives": [
+        "Retain candidate unchanged as the control"
+      ],
+      "confidence": "MEDIUM",
+      "explanation": "Restore the baseline setting while pinning other candidate selections",
+      "expected_observation": "If the hypothesis is supported, the affected stage recovers on the same benchmark",
+      "evidence_refs": [
+        {
+          "kind": "case",
+          "record_id": "baseline-q00",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q00",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q01",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q01",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q02",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q02",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q03",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q03",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "baseline-q04",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "case",
+          "record_id": "candidate-q04",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "configdiff",
+          "record_id": "37c228cb-7095-49d3-a419-3788c7592051",
+          "run_id": null,
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "533badd2-ccfa-4950-9185-df4f73da0ee3",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "65166f8b-dc0b-41e1-bf0b-757ed0c32db4",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "c33bdf40-71c0-447e-8fb2-0ebccecf1d50",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "61652964-dcdd-4f04-a64a-4fd63fe0f1aa",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "1f9d9cb8-28ae-4dd3-af53-0e11423f044b",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "a6adf217-d83f-4c68-bad5-9bd3e646ad59",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "ec109916-28fb-4b45-8c44-0fcb3c8e2bbd",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "e11bfb57-2831-4b2a-bbcc-9b647c582be8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "4830eb62-799a-4cea-bbe1-f21b818bfc6c",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "237497bc-349b-4553-93ec-f70562d31be3",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "abbb4a3b-ed4d-4177-a486-47d2e482c144",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "17210c2c-817b-42cb-864e-1e83a607998e",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "33c7431c-d330-4be6-a018-dd612b56cbe7",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "2ad96bcb-60ab-4879-ae72-daac68fcb7c8",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "82cf2879-30d3-4520-9e75-ee7b6008fdf4",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "bde26801-e503-4967-9afb-530916dec310",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "d86fd79e-bb82-4e54-928d-e9ebef8883f5",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fbd92852-b88e-4992-8f51-476dbf94d35c",
+          "run_id": "fixture-candidate",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "fc207d41-5346-463e-8dc0-37756ee4c52d",
+          "run_id": "fixture-baseline",
+          "path": null
+        },
+        {
+          "kind": "metric",
+          "record_id": "8651a004-d641-4229-a04b-77c13838b546",
+          "run_id": "fixture-candidate",
+          "path": null
+        }
+      ],
+      "uncertainty": [
+        "Diagnostic association, not causal proof"
+      ],
+      "tradeoffs": {}
+    }
+  ],
+  "changed_cases": {
+    "q00": [
+      "DENSE_RETRIEVAL:ndcg@5",
+      "DENSE_RETRIEVAL:precision@5",
+      "DENSE_RETRIEVAL:recall@5"
+    ],
+    "q01": [
+      "DENSE_RETRIEVAL:ndcg@5",
+      "DENSE_RETRIEVAL:precision@5",
+      "DENSE_RETRIEVAL:recall@5"
+    ],
+    "q02": [
+      "DENSE_RETRIEVAL:ndcg@5",
+      "DENSE_RETRIEVAL:precision@5",
+      "DENSE_RETRIEVAL:recall@5"
+    ],
+    "q03": [
+      "DENSE_RETRIEVAL:ndcg@5",
+      "DENSE_RETRIEVAL:precision@5",
+      "DENSE_RETRIEVAL:recall@5"
+    ],
+    "q04": [
+      "DENSE_RETRIEVAL:ndcg@5",
+      "DENSE_RETRIEVAL:precision@5",
+      "DENSE_RETRIEVAL:recall@5"
+    ]
+  },
+  "newly_failed_cases": [],
+  "recovered_cases": [],
+  "newly_failed_quality_gates": {},
+  "recovered_quality_gates": {},
+  "rule_version": "1",
+  "regression_localization": {
+    "stages": [
+      "DENSE_RETRIEVAL"
+    ],
+    "per_case": {
+      "q00": [
+        {
+          "stage": "DENSE_RETRIEVAL",
+          "upstream_unobserved": [],
+          "upstream_stability_confirmed": true,
+          "qualification": "first supported affected stage"
+        }
+      ],
+      "q01": [
+        {
+          "stage": "DENSE_RETRIEVAL",
+          "upstream_unobserved": [],
+          "upstream_stability_confirmed": true,
+          "qualification": "first supported affected stage"
+        }
+      ],
+      "q02": [
+        {
+          "stage": "DENSE_RETRIEVAL",
+          "upstream_unobserved": [],
+          "upstream_stability_confirmed": true,
+          "qualification": "first supported affected stage"
+        }
+      ],
+      "q03": [
+        {
+          "stage": "DENSE_RETRIEVAL",
+          "upstream_unobserved": [],
+          "upstream_stability_confirmed": true,
+          "qualification": "first supported affected stage"
+        }
+      ],
+      "q04": [
+        {
+          "stage": "DENSE_RETRIEVAL",
+          "upstream_unobserved": [],
+          "upstream_stability_confirmed": true,
+          "qualification": "first supported affected stage"
+        }
+      ]
+    },
+    "causal_proof": false,
+    "denominator": 5
+  }
+}

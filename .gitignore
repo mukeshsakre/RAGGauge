@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# RAGGauge demo reports
+comparison.html
+comparison.json

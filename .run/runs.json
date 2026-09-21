@@ -1,0 +1,2080 @@
+[
+  {
+    "id": "fixture-baseline",
+    "experiment_id": "experiment-baseline",
+    "dataset_version": "fixture-dataset-v1",
+    "corpus_version": "fixture-corpus-v1",
+    "status": "COMPLETED",
+    "effective_configuration": {
+      "schema_version": 1,
+      "source_versions": {
+        "fixture": "v1"
+      },
+      "values": {
+        "retrieval": {
+          "strategy": "dense",
+          "dense": {
+            "top_k": 20
+          }
+        }
+      },
+      "capability_states": {},
+      "complete": true,
+      "fingerprint": "5a04975be6768ed4d1c2bca897659913f0324d16aefab879531c68926f66fa70"
+    },
+    "cases": [
+      {
+        "id": "baseline-q00",
+        "case_id": "q00",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q00",
+          "case_execution_id": "baseline-q00",
+          "question": "Where is policy 0?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "e278a9c2-dd2d-4358-ae0f-969f262ba103",
+            "case_execution_id": "baseline-q00",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "533badd2-ccfa-4950-9185-df4f73da0ee3",
+            "case_execution_id": "baseline-q00",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "e051a5d2-d9cb-4847-bc18-e83c1549b1b8",
+            "case_execution_id": "baseline-q00",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q01",
+        "case_id": "q01",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q01",
+          "case_execution_id": "baseline-q01",
+          "question": "Where is policy 1?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "bf281a2a-e0db-466c-87ea-0f490d6a2507",
+            "case_execution_id": "baseline-q01",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "c33bdf40-71c0-447e-8fb2-0ebccecf1d50",
+            "case_execution_id": "baseline-q01",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "694809cc-452e-43d6-9983-c23816e2981c",
+            "case_execution_id": "baseline-q01",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q02",
+        "case_id": "q02",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q02",
+          "case_execution_id": "baseline-q02",
+          "question": "Where is policy 2?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "e5afba36-1d1b-4444-a0b3-26cf71226b1a",
+            "case_execution_id": "baseline-q02",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "1f9d9cb8-28ae-4dd3-af53-0e11423f044b",
+            "case_execution_id": "baseline-q02",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "87f12dd5-fb9f-4eee-b400-a3ad0f0198cb",
+            "case_execution_id": "baseline-q02",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q03",
+        "case_id": "q03",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q03",
+          "case_execution_id": "baseline-q03",
+          "question": "Where is policy 3?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "534fc04b-a587-4061-9f44-4f84c8656755",
+            "case_execution_id": "baseline-q03",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "ec109916-28fb-4b45-8c44-0fcb3c8e2bbd",
+            "case_execution_id": "baseline-q03",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "b59530c2-467c-40ec-843a-2e5371fe7017",
+            "case_execution_id": "baseline-q03",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q04",
+        "case_id": "q04",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q04",
+          "case_execution_id": "baseline-q04",
+          "question": "Where is policy 4?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "a0286ac8-7521-46ee-b702-f619c09be7b7",
+            "case_execution_id": "baseline-q04",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "4830eb62-799a-4cea-bbe1-f21b818bfc6c",
+            "case_execution_id": "baseline-q04",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "8a66cb9d-c23e-4fbd-aa3f-4a1ee4983d84",
+            "case_execution_id": "baseline-q04",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q05",
+        "case_id": "q05",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q05",
+          "case_execution_id": "baseline-q05",
+          "question": "Where is policy 5?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "26e08886-84d7-4de3-b581-cc5c85389162",
+            "case_execution_id": "baseline-q05",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "abbb4a3b-ed4d-4177-a486-47d2e482c144",
+            "case_execution_id": "baseline-q05",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "b117d457-c23c-401b-9942-0ac3fcdaeee9",
+            "case_execution_id": "baseline-q05",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q06",
+        "case_id": "q06",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q06",
+          "case_execution_id": "baseline-q06",
+          "question": "Where is policy 6?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "0a3c60f3-ca7a-4336-beb2-0484eec7a196",
+            "case_execution_id": "baseline-q06",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "33c7431c-d330-4be6-a018-dd612b56cbe7",
+            "case_execution_id": "baseline-q06",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "12eff605-5d54-40c0-9428-9a7c38539be7",
+            "case_execution_id": "baseline-q06",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q07",
+        "case_id": "q07",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q07",
+          "case_execution_id": "baseline-q07",
+          "question": "Where is policy 7?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "1d112c11-adea-48d1-9964-68c30b514118",
+            "case_execution_id": "baseline-q07",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "82cf2879-30d3-4520-9e75-ee7b6008fdf4",
+            "case_execution_id": "baseline-q07",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "f4cec27f-6bbd-4bc2-a92f-dfad18422a6c",
+            "case_execution_id": "baseline-q07",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q08",
+        "case_id": "q08",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q08",
+          "case_execution_id": "baseline-q08",
+          "question": "Where is policy 8?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "382aad75-3161-48b7-b8f2-f9d87e6f63b7",
+            "case_execution_id": "baseline-q08",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "d86fd79e-bb82-4e54-928d-e9ebef8883f5",
+            "case_execution_id": "baseline-q08",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "387e2582-d20e-4026-999d-1b3a63523e3c",
+            "case_execution_id": "baseline-q08",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "baseline-q09",
+        "case_id": "q09",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-baseline-q09",
+          "case_execution_id": "baseline-q09",
+          "question": "Where is policy 9?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "baseline",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "2667a680-7d76-4313-b581-e53aece59807",
+            "case_execution_id": "baseline-q09",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "fc207d41-5346-463e-8dc0-37756ee4c52d",
+            "case_execution_id": "baseline-q09",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "a2351b23-b730-4986-823e-0d9a6518f1c6",
+            "case_execution_id": "baseline-q09",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      }
+    ],
+    "created_at": "2026-09-21T06:40:15.243897Z",
+    "started_at": null,
+    "finished_at": null
+  },
+  {
+    "id": "fixture-candidate",
+    "experiment_id": "experiment-candidate",
+    "dataset_version": "fixture-dataset-v1",
+    "corpus_version": "fixture-corpus-v1",
+    "status": "COMPLETED",
+    "effective_configuration": {
+      "schema_version": 1,
+      "source_versions": {
+        "fixture": "v1"
+      },
+      "values": {
+        "retrieval": {
+          "strategy": "dense",
+          "dense": {
+            "top_k": 5
+          }
+        }
+      },
+      "capability_states": {},
+      "complete": true,
+      "fingerprint": "886bace158b47919f63cdde515f5077f7832e8f857ca473262a01d81d38cd33d"
+    },
+    "cases": [
+      {
+        "id": "candidate-q00",
+        "case_id": "q00",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q00",
+          "case_execution_id": "candidate-q00",
+          "question": "Where is policy 0?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=B; rank=1; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=2; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=3; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "5f55b6bb-c360-4185-bbbc-301223937a46",
+            "case_execution_id": "candidate-q00",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "65166f8b-dc0b-41e1-bf0b-757ed0c32db4",
+            "case_execution_id": "candidate-q00",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "ec5e01c4-6224-44fd-8f17-8f11614060a1",
+            "case_execution_id": "candidate-q00",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q01",
+        "case_id": "q01",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q01",
+          "case_execution_id": "candidate-q01",
+          "question": "Where is policy 1?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=B; rank=1; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=2; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=3; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "55cbc18e-5299-467e-a648-906459dc55b2",
+            "case_execution_id": "candidate-q01",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "61652964-dcdd-4f04-a64a-4fd63fe0f1aa",
+            "case_execution_id": "candidate-q01",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "49d68bf8-34a5-44c2-bbc2-792d0509c8d9",
+            "case_execution_id": "candidate-q01",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q02",
+        "case_id": "q02",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q02",
+          "case_execution_id": "candidate-q02",
+          "question": "Where is policy 2?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=B; rank=1; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=2; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=3; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "d6ea3995-df91-45a8-87d5-1f73a5ff3618",
+            "case_execution_id": "candidate-q02",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "a6adf217-d83f-4c68-bad5-9bd3e646ad59",
+            "case_execution_id": "candidate-q02",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "df65151c-d332-475f-bfc8-a1242a605ca0",
+            "case_execution_id": "candidate-q02",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q03",
+        "case_id": "q03",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q03",
+          "case_execution_id": "candidate-q03",
+          "question": "Where is policy 3?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=B; rank=1; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=2; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=3; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "7a444697-bd9a-40fd-8b2c-c701d3195645",
+            "case_execution_id": "candidate-q03",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "e11bfb57-2831-4b2a-bbcc-9b647c582be8",
+            "case_execution_id": "candidate-q03",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "1f27d65c-91e2-44de-8c93-12ef9057491a",
+            "case_execution_id": "candidate-q03",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q04",
+        "case_id": "q04",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q04",
+          "case_execution_id": "candidate-q04",
+          "question": "Where is policy 4?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=B; rank=1; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=2; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=3; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "9aa566c7-e354-4056-9e0c-0609306a9359",
+            "case_execution_id": "candidate-q04",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "237497bc-349b-4553-93ec-f70562d31be3",
+            "case_execution_id": "candidate-q04",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "e1b06c2a-f773-4e26-990f-ed8d6757b478",
+            "case_execution_id": "candidate-q04",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q05",
+        "case_id": "q05",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q05",
+          "case_execution_id": "candidate-q05",
+          "question": "Where is policy 5?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "d9516898-955d-401c-b317-52e469fce911",
+            "case_execution_id": "candidate-q05",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "17210c2c-817b-42cb-864e-1e83a607998e",
+            "case_execution_id": "candidate-q05",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "63bcc695-8842-409f-b5a9-20968e27cfaa",
+            "case_execution_id": "candidate-q05",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q06",
+        "case_id": "q06",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q06",
+          "case_execution_id": "candidate-q06",
+          "question": "Where is policy 6?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "2993fc85-26d6-440d-87d0-e9a1fe8666cd",
+            "case_execution_id": "candidate-q06",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "2ad96bcb-60ab-4879-ae72-daac68fcb7c8",
+            "case_execution_id": "candidate-q06",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "66c0f5d3-5d60-40c6-bb31-8133df6ea856",
+            "case_execution_id": "candidate-q06",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q07",
+        "case_id": "q07",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q07",
+          "case_execution_id": "candidate-q07",
+          "question": "Where is policy 7?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "9081b10c-e064-45e9-a396-25bdf0365217",
+            "case_execution_id": "candidate-q07",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "bde26801-e503-4967-9afb-530916dec310",
+            "case_execution_id": "candidate-q07",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "75f2cf0b-7add-4bac-a654-dc1ea236b3e5",
+            "case_execution_id": "candidate-q07",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q08",
+        "case_id": "q08",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q08",
+          "case_execution_id": "candidate-q08",
+          "question": "Where is policy 8?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "5c691857-abc4-429c-b83b-f4a46664f659",
+            "case_execution_id": "candidate-q08",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "fbd92852-b88e-4992-8f51-476dbf94d35c",
+            "case_execution_id": "candidate-q08",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "3d3f6dc7-672a-4ae6-9568-ed2e983eca6e",
+            "case_execution_id": "candidate-q08",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      },
+      {
+        "id": "candidate-q09",
+        "case_id": "q09",
+        "status": "SUCCEEDED",
+        "trace": {
+          "schema_version": 1,
+          "id": "trace-candidate-q09",
+          "case_execution_id": "candidate-q09",
+          "question": "Where is policy 9?",
+          "stages": {
+            "DENSE_RETRIEVAL": {
+              "stage": "DENSE_RETRIEVAL",
+              "inputs": [],
+              "implementation": "fixture",
+              "configuration_fingerprint": "candidate",
+              "candidates": [
+                "@{id=A; rank=1; score=; document_id=A; chunk_id=; text=A; spans=System.Object[]; chunk_artifact=}",
+                "@{id=B; rank=2; score=; document_id=B; chunk_id=; text=B; spans=System.Object[]; chunk_artifact=}",
+                "@{id=C; rank=3; score=; document_id=C; chunk_id=; text=C; spans=System.Object[]; chunk_artifact=}",
+                "@{id=D; rank=4; score=; document_id=D; chunk_id=; text=D; spans=System.Object[]; chunk_artifact=}",
+                "@{id=E; rank=5; score=; document_id=E; chunk_id=; text=E; spans=System.Object[]; chunk_artifact=}"
+              ],
+              "context": null,
+              "spans": [],
+              "evidence_ids": [
+                "gold-A"
+              ],
+              "evidence_complete": true,
+              "truncated": null,
+              "latency": {
+                "value": 10.0,
+                "boundary": "retrieval",
+                "provenance": "fixture",
+                "currency": null,
+                "estimated": false,
+                "pricing_version": null
+              }
+            }
+          },
+          "generated_answer": null,
+          "total_latency": {
+            "value": 20.0,
+            "boundary": "application",
+            "provenance": "fixture",
+            "currency": null,
+            "estimated": false,
+            "pricing_version": null
+          },
+          "invocations": [],
+          "costs": {},
+          "stage_errors": [],
+          "metadata": {}
+        },
+        "metrics": [
+          {
+            "id": "d3e425aa-c0e8-418d-9c38-fee145f9a479",
+            "case_execution_id": "candidate-q09",
+            "name": "precision@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "b485e0a3a8c0e19da93f3eef6c240e8f16d9585fc68826bd614740cbe4b5a9b5",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.4,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "8651a004-d641-4229-a04b-77c13838b546",
+            "case_execution_id": "candidate-q09",
+            "name": "recall@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "a511f557e44e14d12a2eaaa74ae84dff44f4a5485d82bd569eeb9b3fff83b4e4",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 1.0,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          },
+          {
+            "id": "6d844104-b084-43a8-8007-eeaeef54477c",
+            "case_execution_id": "candidate-q09",
+            "name": "ndcg@5",
+            "stage": "DENSE_RETRIEVAL",
+            "definition_version": "1",
+            "configuration_fingerprint": "75339dea1272246874cbfaa690744772ce02593f20eb29a9614be81a62cba8f0",
+            "evaluator_id": "deterministic-v1",
+            "status": "SUCCESS",
+            "score": 0.9197207891481876,
+            "reason": null,
+            "higher_is_better": true,
+            "self_judging": "UNKNOWN",
+            "evidence_refs": []
+          }
+        ],
+        "errors": []
+      }
+    ],
+    "created_at": "2026-09-21T06:40:15.245407Z",
+    "started_at": null,
+    "finished_at": null
+  }
+]
