@@ -2,15 +2,8 @@ import React, { useState } from 'react';
 import { 
   Database, 
   Search, 
-  Filter, 
   Plus, 
-  Calendar, 
-  FlaskConical, 
-  FileText, 
-  CheckCircle2, 
-  AlertTriangle,
-  ChevronRight,
-  Download
+  ChevronRight
 } from 'lucide-react';
 import { StBadge, StButton } from '../components/ui/StreamlitComponents';
 import { mockDatasets } from '../mockData';
@@ -32,44 +25,57 @@ export const DatasetsScreen: React.FC<DatasetsScreenProps> = ({ onNavigate }) =>
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header Description & Stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">Evaluation Datasets</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Immutable versioned test suites containing golden ground-truth answers and expected document chunk citations.
-          </p>
+      <div className="bg-[#15171e] rounded-xl border border-[#272a33] p-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-[#221c1a] text-[#ff7733] border border-[#3e2720]">
+                <Database className="w-4 h-4" />
+              </div>
+              <h1 className="text-base sm:text-lg font-bold text-white font-mono">Evaluation Datasets</h1>
+              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#1e2129] text-zinc-300 border border-[#2c303c]">
+                {mockDatasets.length} Suites
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 mt-1">
+              Immutable versioned test suites containing golden ground-truth answers and expected document chunk citations.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <StButton
+              id="btn-create-dataset"
+              label="Create Dataset"
+              icon={<Plus className="w-3.5 h-3.5" />}
+              variant="primary"
+              size="sm"
+              onClick={() => onNavigate('create_dataset')}
+            />
+          </div>
         </div>
-        <StButton
-          id="btn-create-dataset"
-          label="Create Dataset"
-          icon={<Plus className="w-4 h-4" />}
-          variant="primary"
-          onClick={() => onNavigate('create_dataset')}
-        />
       </div>
 
       {/* Filter Row */}
-      <div className="bg-white p-3.5 rounded-lg border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs">
-        <div className="flex items-center gap-3 flex-1 min-w-[240px]">
+      <div className="bg-[#15171e] p-2.5 rounded-xl border border-[#272a33] flex flex-wrap items-center justify-between gap-2.5 text-xs shadow-xs">
+        <div className="flex items-center gap-2.5 flex-1 min-w-[220px]">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search datasets by name or tags..."
+              placeholder="Search datasets by name, tags, domain..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800 placeholder:text-slate-400 focus:outline-indigo-500"
+              className="w-full pl-8 pr-3 py-1.5 bg-[#191b22] border border-[#272a33] rounded-lg text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-hidden focus:border-[#ff5500] transition-all font-mono"
             />
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500 font-medium">Status:</span>
+            <span className="text-zinc-400 font-medium">Status:</span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+              className="bg-[#191b22] border border-[#272a33] rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-hidden focus:border-[#ff5500] transition-all cursor-pointer font-mono"
             >
               <option value="All">All Statuses</option>
               <option value="Ready">Ready</option>
@@ -79,74 +85,74 @@ export const DatasetsScreen: React.FC<DatasetsScreenProps> = ({ onNavigate }) =>
           </div>
         </div>
 
-        <div className="text-slate-500 text-xs font-mono">
-          Showing {filteredDatasets.length} of {mockDatasets.length} datasets
+        <div className="text-zinc-400 text-[11px] font-mono">
+          Showing <span className="text-zinc-200 font-bold">{filteredDatasets.length}</span> of {mockDatasets.length} datasets
         </div>
       </div>
 
       {/* Main Datasets Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
+      <div className="bg-[#15171e] rounded-xl border border-[#272a33] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                <th className="py-3 px-4">Dataset Name</th>
-                <th className="py-3 px-3">Current Version</th>
-                <th className="py-3 px-3">Versions</th>
-                <th className="py-3 px-3 text-right">Cases</th>
-                <th className="py-3 px-3">Last Modified</th>
-                <th className="py-3 px-3 text-right">Experiments</th>
-                <th className="py-3 px-3">Status</th>
-                <th className="py-3 px-4 text-center">Actions</th>
+              <tr className="bg-[#181b22] border-b border-[#272a33] text-zinc-400 font-semibold font-mono text-[11px]">
+                <th className="py-2 px-3">Dataset Name</th>
+                <th className="py-2 px-2.5">Current Version</th>
+                <th className="py-2 px-2.5">Available Versions</th>
+                <th className="py-2 px-2.5 text-right">Golden Cases</th>
+                <th className="py-2 px-2.5">Last Modified</th>
+                <th className="py-2 px-2.5 text-right">Linked Experiments</th>
+                <th className="py-2 px-2.5">Validation Status</th>
+                <th className="py-2 px-3 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#22252e]">
               {filteredDatasets.map((ds) => (
                 <tr 
                   key={ds.id} 
-                  className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                  className="hover:bg-[#191c23] transition-colors cursor-pointer group"
                   onClick={() => onNavigate('dataset_detail', { datasetId: ds.id })}
                 >
-                  <td className="py-3.5 px-4 font-medium text-slate-900">
-                    <div className="font-semibold text-indigo-700 group-hover:underline flex items-center gap-1.5">
-                      <Database className="w-3.5 h-3.5 text-slate-400" />
+                  <td className="py-2.5 px-3 font-medium text-zinc-100">
+                    <div className="font-bold text-white group-hover:text-[#ff7733] group-hover:underline flex items-center gap-1.5 font-mono text-xs transition-colors">
+                      <Database className="w-3.5 h-3.5 text-zinc-500" />
                       <span>{ds.name}</span>
                     </div>
-                    <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                    <div className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5 font-sans">
                       {ds.description}
                     </div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-2.5 px-2.5">
                     <StBadge type="version" label={ds.currentVersion} />
                   </td>
-                  <td className="py-3.5 px-3">
-                    <span className="font-mono text-slate-600 text-[11px]">
+                  <td className="py-2.5 px-2.5">
+                    <span className="font-mono text-zinc-400 text-[11px]">
                       {ds.versions.join(', ')}
                     </span>
                   </td>
-                  <td className="py-3.5 px-3 text-right font-mono font-bold text-slate-800">
+                  <td className="py-2.5 px-2.5 text-right font-mono font-bold text-zinc-200">
                     {ds.casesCount}
                   </td>
-                  <td className="py-3.5 px-3 text-slate-500 font-mono text-[11px]">
+                  <td className="py-2.5 px-2.5 text-zinc-400 font-mono text-[11px]">
                     {ds.lastModified}
                   </td>
-                  <td className="py-3.5 px-3 text-right font-mono text-slate-700">
-                    {ds.experimentsCount}
+                  <td className="py-2.5 px-2.5 text-right font-mono text-zinc-300">
+                    {ds.experimentsCount} runs
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-2.5 px-2.5">
                     <StBadge type="status" label={ds.status} />
                   </td>
-                  <td className="py-3.5 px-4 text-center" onClick={(e) => e.stopPropagation()}>
+                  <td className="py-2.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-1.5">
                       <button
                         onClick={() => onNavigate('dataset_detail', { datasetId: ds.id })}
-                        className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium"
+                        className="px-2 py-0.5 rounded bg-[#1f222b] hover:bg-[#282c38] text-zinc-300 font-mono text-[10px] border border-[#2e323e] transition-colors"
                       >
                         Inspect
                       </button>
                       <button
                         onClick={() => onNavigate('new_experiment', { datasetId: ds.id })}
-                        className="px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium"
+                        className="px-2 py-0.5 rounded bg-[#251e1b] hover:bg-[#332520] text-[#ff7733] font-mono text-[10px] border border-[#422720] transition-colors"
                       >
                         Run Eval
                       </button>

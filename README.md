@@ -88,10 +88,11 @@ unfinished work interrupted; it does not replay charged calls. Judge errors do
 not discard retrieval results. Confidence is heuristic, not proof of causality.
 
 Tests cover deterministic logic, BM25, contracts, API permissions, transactions
-in an isolated SQLite harness and worker isolation. Live PostgreSQL/pgvector and
-provider/model tests need available infrastructure/credentials. The development
-environment had no running Docker daemon; passing unit tests do not imply those
-live integrations were verified.
+in an isolated SQLite harness and worker isolation. PostgreSQL/pgvector tests use
+`RAGGAUGE_TEST_DATABASE_URL`, which must reference a dedicated test database.
+Provider/model tests need their optional dependencies and appropriate credentials.
+See [UI test instructions](app/README.md#verification) for the browser regression
+suite, including real API/worker flows against an isolated test database.
 
 LLM analyst execution, critics, multi-judge execution, autonomous optimization and
 deployment remain explicitly deferred.

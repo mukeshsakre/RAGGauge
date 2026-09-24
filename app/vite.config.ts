@@ -3,13 +3,6 @@ import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
-  const apiProxy = {
-    '/api': {
-      target: 'http://127.0.0.1:8000',
-      changeOrigin: true,
-      rewrite: (requestPath: string) => requestPath.replace(/^\/api/, ''),
-    },
-  };
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -18,13 +11,14 @@ export default defineConfig(() => {
       },
     },
     server: {
+      host: '127.0.0.1', port: 8501, strictPort: true,
+      proxy: { '/api': { target: process.env.RAGGAUGE_API_PROXY_TARGET || 'http://127.0.0.1:8000', rewrite: (path: string) => path.replace(/^\/api/, '') } },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
-      proxy: apiProxy,
     },
-    preview: { proxy: apiProxy },
+    preview: { host: '127.0.0.1', port: 8501, strictPort: true, proxy: { '/api': { target: process.env.RAGGAUGE_API_PROXY_TARGET || 'http://127.0.0.1:8000', rewrite: (path: string) => path.replace(/^\/api/, '') } } },
   };
 });

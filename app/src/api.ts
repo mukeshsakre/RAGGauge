@@ -60,7 +60,9 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
     let message = `Request failed (${response.status})`;
     try {
       const body = await response.json();
-      message = body.detail || message;
+      message = typeof body.detail === 'string' ? body.detail : Array.isArray(body.detail)
+        ? body.detail.map((entry: any) => `${entry.loc?.join('.') || 'request'}: ${entry.msg || 'Invalid value'}`).join('; ')
+        : message;
     } catch {
       // Keep the status-based fallback when an upstream returns non-JSON.
     }

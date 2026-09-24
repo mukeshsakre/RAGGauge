@@ -1,5 +1,7 @@
 export type ScreenId = 
+  | 'login'
   | 'overview'
+  | 'compact_console'
   | 'datasets'
   | 'dataset_detail'
   | 'create_dataset'
@@ -16,6 +18,14 @@ export type ScreenId =
   | 'adapters'
   | 'configuration'
   | 'settings';
+
+export interface AuthUser {
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+  organization: string;
+}
 
 export type ExperimentMode = 'adapter' | 'pipeline';
 
@@ -130,7 +140,7 @@ export interface Experiment {
   datasetVersion: string;
   mode: ExperimentMode;
   configurationSummary: string;
-  status: 'Completed' | 'Running' | 'Failed' | 'Draft';
+  status: 'Completed' | 'Completed with errors' | 'Running' | 'Pending' | 'Cancelled' | 'Failed' | 'Draft';
   metrics: MetricScoreGroup;
   deltas?: MetricDeltas;
   startedAt: string;
@@ -272,4 +282,3 @@ export interface JudgeProfile {
   temperature: number;
   rubricDescription: string;
 }
-

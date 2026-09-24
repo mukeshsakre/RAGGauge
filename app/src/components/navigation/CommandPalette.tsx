@@ -1,28 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Search, 
-  BarChart3, 
-  Database, 
-  FlaskConical, 
-  GitCompare, 
-  Sliders, 
-  Cpu, 
-  Workflow, 
-  ShieldCheck, 
-  Settings, 
-  FileText, 
-  Play, 
-  Sparkles, 
+import {
+  Search,
+  BarChart3,
+  Database,
+  FlaskConical,
+  GitCompare,
+  Sliders,
+  Cpu,
+  Workflow,
+  ShieldCheck,
+  Settings,
+  FileText,
+  Play,
+  Sparkles,
   ArrowRight,
-  X
+  X,
+  Code2,
+  LogIn,
+  Gauge
 } from 'lucide-react';
-import { ScreenId } from '../../types';
 import { useRAGGauge } from '../../context/DataContext';
+import { ScreenId } from '../../types';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (screen: ScreenId, params?: Record<string, any>) => void;
+  onOpenCodeModal: () => void;
 }
 
 interface CommandItem {
@@ -39,13 +43,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
   onClose,
   onNavigate,
+  onOpenCodeModal
 }) => {
+  const { snapshot } = useRAGGauge();
+  const latestComparison = [...snapshot.comparisons].reverse()[0];
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { snapshot } = useRAGGauge();
-  const runIds = snapshot.runs.slice(-2).map(run => run.id);
-  const latestCase = snapshot.datasets[0]?.cases?.[0]?.id;
 
   useEffect(() => {
     if (isOpen) {
@@ -60,10 +64,19 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'screen-overview',
       title: 'Overview Dashboard',
       category: 'Screens',
-      description: 'Persisted run evidence, metric coverage, and workspace status',
+      description: 'System health metrics, Pareto frontier & engineering ledger',
       icon: BarChart3,
       badge: 'Main',
       action: () => onNavigate('overview')
+    },
+    {
+      id: 'screen-compact-console',
+      title: 'Demo Dashboard (Compact Hardware UI)',
+      category: 'Screens',
+      description: 'Compact telemetry console with tactile dials, knobs & LED matrix displays',
+      icon: Gauge,
+      badge: 'Compact',
+      action: () => onNavigate('compact_console')
     },
     {
       id: 'screen-experiments',
@@ -103,21 +116,21 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: 'screen-regression',
-      title: 'Regression Analysis',
+      title: 'Latest Regression Analysis',
       category: 'Screens',
-      description: 'Inspect persisted changed cases by deterministic diagnosis',
+      description: 'Inspect persisted stage evidence and affected cases',
       icon: Sparkles,
       badge: 'Diagnosis',
-      action: () => onNavigate('regression_analysis', { baselineId: runIds[0], currentId: runIds[1] })
+      action: () => onNavigate('regression_analysis', { baselineId: latestComparison?.baseline_run_id, currentId: latestComparison?.candidate_run_id })
     },
     {
       id: 'screen-recommendation',
       title: 'Recommendation & Production Gate',
       category: 'Screens',
-      description: 'Inspect evidence-backed evaluated-run recommendations',
+      description: 'Evidence-backed controlled next experiments',
       icon: ShieldCheck,
       badge: 'Report',
-      action: () => onNavigate('recommendation', { baselineId: runIds[0], currentId: runIds[1] })
+      action: () => onNavigate('recommendation', { baselineId: latestComparison?.baseline_run_id, currentId: latestComparison?.candidate_run_id })
     },
     {
       id: 'action-new-exp',
@@ -129,13 +142,31 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       action: () => onNavigate('new_experiment')
     },
     {
-      id: 'case-trace',
-      title: latestCase ? `Inspect ${latestCase} trace` : 'Open Case Explorer',
+      id: 'action-login',
+      title: 'Login Page / Switch Engineer Profile',
+      category: 'Actions',
+      description: 'Sign out to change the local account',
+      icon: LogIn,
+      badge: 'Auth',
+      action: () => onNavigate('login')
+    },
+    {
+      id: 'case-031',
+      title: 'Inspect a persisted case',
       category: 'Edge Cases',
-      description: 'Inspect the persisted normalized trace and metric evidence',
+      description: 'Inspect the latest available normalized trace',
       icon: FileText,
       badge: 'Failure',
-      action: () => onNavigate('case_detail', { caseId: latestCase })
+      action: () => onNavigate('case_detail', {})
+    },
+    {
+      id: 'action-code',
+      title: 'Inspect Streamlit Python Source',
+      category: 'Tools',
+      description: 'View pure Streamlit st.metric, st.dataframe, st.tabs implementation',
+      icon: Code2,
+      badge: 'Python',
+      action: onOpenCodeModal
     },
     {
       id: 'screen-models',
@@ -163,7 +194,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     }
   ];
 
-  const filteredCommands = commands.filter(cmd => 
+  const filteredCommands = commands.filter(cmd => !['screen-compact-console', 'action-code', 'action-login'].includes(cmd.id)).filter(cmd =>
     cmd.title.toLowerCase().includes(query.toLowerCase()) ||
     cmd.description.toLowerCase().includes(query.toLowerCase()) ||
     cmd.category.toLowerCase().includes(query.toLowerCase())
@@ -194,14 +225,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-      <div 
-        className="w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100"
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+      <div
+        className="w-full max-w-2xl bg-[#15171e] border border-[#272a33] rounded-xl shadow-2xl overflow-hidden flex flex-col text-zinc-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-800 bg-slate-950/60">
-          <Search className="w-5 h-5 text-indigo-400 mr-3 shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-[#22252c] bg-[#12141a]">
+          <Search className="w-5 h-5 text-[#ff5500] mr-3 shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -209,17 +240,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a command, screen, or case ID (e.g. 'Lab', 'CASE-031', 'Compare')..."
-            className="w-full bg-transparent border-none outline-hidden text-sm text-white placeholder-slate-500 font-sans"
+            className="w-full bg-transparent border-none outline-hidden text-sm text-white placeholder-zinc-500 font-sans"
           />
           {query && (
-            <button 
+            <button
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-white p-1"
+              className="text-zinc-400 hover:text-white p-1"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <span className="hidden sm:inline-flex items-center px-2 py-0.5 ml-2 rounded text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700">
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 ml-2 rounded text-[10px] font-mono text-zinc-400 bg-[#1e2129] border border-[#2e323e]">
             ESC
           </span>
         </div>
@@ -227,8 +258,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Results List */}
         <div className="max-h-96 overflow-y-auto p-2 space-y-1">
           {filteredCommands.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 text-xs">
-              No matching commands or screens found for <span className="text-slate-300">"{query}"</span>
+            <div className="py-8 text-center text-zinc-500 text-xs">
+              No matching commands or screens found for <span className="text-zinc-300">"{query}"</span>
             </div>
           ) : (
             filteredCommands.map((cmd, idx) => {
@@ -242,15 +273,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onClose();
                   }}
                   onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-all ${
-                    isSelected 
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/30' 
-                      : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-left transition-all ${
+                    isSelected
+                      ? 'bg-[#ff5500] text-white shadow-xs shadow-orange-500/30'
+                      : 'text-zinc-300 hover:bg-[#1d2027] hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`p-2 rounded-lg ${
-                      isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-indigo-400'
+                      isSelected ? 'bg-black/20 text-white' : 'bg-[#1e2129] text-[#ff7733]'
                     }`}>
                       <Icon className="w-4 h-4" />
                     </div>
@@ -259,14 +290,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <span>{cmd.title}</span>
                         {cmd.badge && (
                           <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
-                            isSelected ? 'bg-indigo-700 text-indigo-100' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                            isSelected ? 'bg-[#e04b00] text-white' : 'bg-[#191b22] text-zinc-400 border border-[#2b2e38]'
                           }`}>
                             {cmd.badge}
                           </span>
                         )}
                       </div>
                       <div className={`text-[11px] truncate mt-0.5 ${
-                        isSelected ? 'text-indigo-100' : 'text-slate-400'
+                        isSelected ? 'text-white/80' : 'text-zinc-400'
                       }`}>
                         {cmd.description}
                       </div>
@@ -282,14 +313,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2 bg-slate-950/80 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between font-mono">
+        <div className="px-4 py-2 bg-[#101217] border-t border-[#22252c] text-[11px] text-zinc-400 flex items-center justify-between font-mono">
           <div className="flex items-center gap-3">
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">↑↓</kbd> navigate</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">↵</kbd> select</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">esc</kbd> close</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#1e2129] text-zinc-300 border border-[#2b2e38]">↑↓</kbd> navigate</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#1e2129] text-zinc-300 border border-[#2b2e38]">↵</kbd> select</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-[#1e2129] text-zinc-300 border border-[#2b2e38]">esc</kbd> close</span>
           </div>
-          <div className="text-indigo-400 font-medium">
-            RAGGauge v0.1.0
+          <div className="text-[#ff7733] font-medium">
+            RAGGauge v1.4.2
           </div>
         </div>
       </div>

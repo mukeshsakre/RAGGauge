@@ -14,7 +14,7 @@ export const RecommendationScreen: React.FC<Props> = ({ onNavigate, baselineId =
   const { showToast } = useToast();
   const [draft, setDraft] = useState<any>(null);
   const [busy, setBusy] = useState(false);
-  const comparison = useMemo(() => snapshot.comparisons.find(item => item.baseline_run_id === baselineId && item.candidate_run_id === currentId), [snapshot.comparisons, baselineId, currentId]);
+  const comparison = useMemo(() => [...snapshot.comparisons].reverse().find(item => item.baseline_run_id === baselineId && item.candidate_run_id === currentId), [snapshot.comparisons, baselineId, currentId]);
   const recommendations = comparison?.recommendations || [];
   const objective = comparison?.objective;
 
@@ -27,7 +27,7 @@ export const RecommendationScreen: React.FC<Props> = ({ onNavigate, baselineId =
 
   const preview = async (recommendation: any) => {
     setBusy(true);
-    try { setDraft(await previewSuggestedExperiment(comparison.id, recommendation.id)); }
+    try { setDraft({ recommendationId: recommendation.id, experiment: await previewSuggestedExperiment(comparison.id, recommendation.id) }); }
     catch (error) { showToast({ type: 'error', title: 'Preview failed', message: error instanceof Error ? error.message : 'Unknown API error' }); }
     finally { setBusy(false); }
   };
@@ -41,21 +41,21 @@ export const RecommendationScreen: React.FC<Props> = ({ onNavigate, baselineId =
   if (!comparison) return <div className="max-w-4xl mx-auto"><StAlert type="warning">No persisted comparison matches these runs. Create the comparison before requesting recommendations.</StAlert></div>;
 
   return <div className="max-w-4xl mx-auto space-y-5">
-    <header className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex items-center justify-between gap-4">
-      <div><div className="flex items-center gap-2"><button onClick={() => onNavigate('compare', { selected: [baselineId, currentId] })} className="p-2 rounded-lg border"><ArrowLeft className="w-4 h-4" /></button><Sparkles className="w-5 h-5 text-indigo-500" /><h1 className="text-xl font-bold">Evidence-backed recommendations</h1></div><p className="mt-2 text-xs font-mono text-slate-500">{currentId} against {baselineId}</p></div>
+    <header className="bg-[#15171e] rounded-xl border border-[#272a33] p-5 flex items-center justify-between gap-4">
+      <div><div className="flex items-center gap-2"><button onClick={() => onNavigate('compare', { selected: [baselineId, currentId] })} className="p-2 rounded-lg border"><ArrowLeft className="w-4 h-4" /></button><Sparkles className="w-5 h-5 text-[#ff7733]" /><h1 className="text-base sm:text-lg font-bold font-mono">Evidence-backed recommendations</h1></div><p className="mt-2 text-xs font-mono text-zinc-400">{currentId} against {baselineId}</p></div>
       <StButton label="Export Markdown" icon={<Download className="w-4 h-4" />} variant="secondary" onClick={exportReport} />
     </header>
     <section className="grid sm:grid-cols-3 gap-3">
-      <div className="p-4 rounded-xl border bg-white dark:bg-slate-900"><div className="text-xs text-slate-500">Objective</div><div className="font-bold mt-1">{objective?.kind || 'Diagnostic next experiment'}</div></div>
-      <div className="p-4 rounded-xl border bg-white dark:bg-slate-900"><div className="text-xs text-slate-500">Change isolation</div><div className="font-bold mt-1">{comparison.change_isolation}</div></div>
-      <div className="p-4 rounded-xl border bg-white dark:bg-slate-900"><div className="text-xs text-slate-500">Observations</div><div className="font-mono font-bold text-xl mt-1">{comparison.observations?.length || 0}</div></div>
+      <div className="p-4 rounded-xl border bg-[#15171e] "><div className="text-xs text-zinc-400">Objective</div><div className="font-bold mt-1">{objective?.kind || 'Diagnostic next experiment'}</div></div>
+      <div className="p-4 rounded-xl border bg-[#15171e] "><div className="text-xs text-zinc-400">Change isolation</div><div className="font-bold mt-1">{comparison.change_isolation}</div></div>
+      <div className="p-4 rounded-xl border bg-[#15171e] "><div className="text-xs text-zinc-400">Observations</div><div className="font-mono font-bold text-xl mt-1">{comparison.observations?.length || 0}</div></div>
     </section>
-    {!recommendations.length ? <StAlert type="info">The deterministic rules abstained. Available evidence does not support a controlled recommendation.</StAlert> : recommendations.map((recommendation: any) => <section key={recommendation.id} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-4">
-      <div className="flex justify-between gap-4"><div><h2 className="font-bold flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" />{recommendation.objective}</h2><p className="text-sm text-slate-500 mt-2">{recommendation.explanation}</p></div><StBadge type="status" label={recommendation.confidence || 'UNSPECIFIED'} /></div>
+    {!recommendations.length ? <StAlert type="info">The deterministic rules abstained. Available evidence does not support a controlled recommendation.</StAlert> : recommendations.map((recommendation: any) => <section key={recommendation.id} className="p-5 rounded-xl border border-[#272a33] bg-[#15171e] space-y-4">
+      <div className="flex justify-between gap-4"><div><h2 className="font-bold flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" />{recommendation.objective}</h2><p className="text-sm text-zinc-400 mt-2">{recommendation.explanation}</p></div><StBadge type="status" label={recommendation.confidence || 'UNSPECIFIED'} /></div>
       <StCodeBlock code={printable(recommendation.overrides || {})} language="json" title="Recommended override" />
-      <div className="text-xs text-slate-500">Expected observation: {recommendation.expected_observation || 'Not recorded'} · Evidence: {recommendation.evidence_refs?.length || 0} references</div>
-      {draft && <div className="rounded-xl border border-indigo-300 bg-indigo-50 dark:bg-indigo-950/20 p-4"><div className="font-bold text-sm mb-2">Review suggested experiment</div><StCodeBlock code={printable(draft)} language="json" title="Immutable draft preview" /><div className="mt-3"><StButton label={busy ? 'Creating…' : 'Confirm and create draft'} icon={<GitBranch className="w-4 h-4" />} disabled={busy} onClick={() => create(recommendation)} /></div></div>}
-      {!draft && <StButton label={busy ? 'Preparing…' : 'Create Suggested Experiment'} icon={<GitBranch className="w-4 h-4" />} disabled={busy} onClick={() => preview(recommendation)} />}
+      <div className="text-xs text-zinc-400">Expected observation: {recommendation.expected_observation || 'Not recorded'} · Evidence: {recommendation.evidence_refs?.length || 0} references</div>
+      {draft?.recommendationId === recommendation.id && <div className="rounded-xl border border-[#422720] bg-[#251e1b] p-4"><div className="font-bold text-sm mb-2">Review suggested experiment</div><StCodeBlock code={printable(draft.experiment)} language="json" title="Immutable draft preview" /><div className="mt-3"><StButton label={busy ? 'Creating…' : 'Confirm and create draft'} icon={<GitBranch className="w-4 h-4" />} disabled={busy || snapshot.user.role === 'VIEWER'} onClick={() => create(recommendation)} /></div></div>}
+      {recommendation.kind === 'CONTROLLED_EXPERIMENT' && draft?.recommendationId !== recommendation.id && <StButton label={busy ? 'Preparing…' : 'Create Suggested Experiment'} icon={<GitBranch className="w-4 h-4" />} disabled={busy || snapshot.user.role === 'VIEWER'} onClick={() => preview(recommendation)} />}
     </section>)}
   </div>;
 };

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  FlaskConical, 
-  Filter, 
-  Search, 
-  GitCompare, 
-  Play, 
-  RotateCw, 
-  ChevronRight, 
+import {
+  FlaskConical,
+  Filter,
+  Search,
+  GitCompare,
+  Play,
+  RotateCw,
+  ChevronRight,
   SlidersHorizontal,
   ArrowUpRight,
   ArrowDownRight,
@@ -16,18 +16,14 @@ import { StBadge, StButton } from '../components/ui/StreamlitComponents';
 import { mockExperiments } from '../mockData';
 import { ScreenId } from '../types';
 
-const metric = (value: number) => Number.isFinite(value) ? value.toFixed(2) : 'Not evaluated';
-const seconds = (value: number) => Number.isFinite(value) ? `${value.toFixed(3)}s` : 'Not recorded';
-const money = (value: number) => Number.isFinite(value) ? `$${value.toFixed(4)}` : 'Not recorded';
+const display = (value: number, suffix = '') => Number.isFinite(value) ? `${value.toFixed(3)}${suffix}` : 'Not available';
 
 interface ExperimentsScreenProps {
   onNavigate: (screen: ScreenId, params?: Record<string, any>) => void;
 }
 
 export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate }) => {
-  const [selectedExpIds, setSelectedExpIds] = useState<string[]>(
-    mockExperiments.filter(experiment => experiment.status === 'Completed').slice(0, 2).map(experiment => experiment.id)
-  );
+  const [selectedExpIds, setSelectedExpIds] = useState<string[]>([]);
   const [modeFilter, setModeFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,7 +37,7 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate
   };
 
   const filteredExperiments = mockExperiments.filter(exp => {
-    const matchesSearch = exp.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = exp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           exp.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           exp.configurationSummary.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMode = modeFilter === 'All' || exp.mode === modeFilter;
@@ -50,47 +46,58 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate
   });
 
   return (
-    <div className="space-y-6 relative pb-16">
+    <div className="space-y-4 relative pb-16">
       {/* Header with Title & Primary CTA */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">Benchmark Experiments</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Systematic benchmark runs measuring retrieval precision, context grounding, latency overhead, and API cost.
-          </p>
-        </div>
+      <div className="bg-[#15171e] rounded-xl border border-[#272a33] p-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-[#221c1a] text-[#ff7733] border border-[#3e2720]">
+                <FlaskConical className="w-4 h-4" />
+              </div>
+              <h1 className="text-base sm:text-lg font-bold text-white font-mono">Benchmark Experiments</h1>
+              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#1e2129] text-zinc-300 border border-[#2c303c]">
+                {mockExperiments.length} Runs
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 mt-1">
+              Systematic benchmark runs measuring retrieval precision, context grounding, latency overhead, and API cost.
+            </p>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <StButton
-            id="btn-new-experiment"
-            label="New Experiment"
-            icon={<Plus className="w-4 h-4" />}
-            variant="primary"
-            onClick={() => onNavigate('new_experiment')}
-          />
+          <div className="flex items-center gap-2">
+            <StButton
+              id="btn-new-experiment"
+              label="New Experiment"
+              icon={<Plus className="w-3.5 h-3.5" />}
+              variant="primary"
+              size="sm"
+              onClick={() => onNavigate('new_experiment')}
+            />
+          </div>
         </div>
       </div>
 
       {/* Filter Row */}
-      <div className="bg-white p-3.5 rounded-lg border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs">
-        <div className="flex flex-wrap items-center gap-3 flex-1">
-          <div className="relative min-w-[220px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />
+      <div className="bg-[#15171e] p-2.5 rounded-xl border border-[#272a33] flex flex-wrap items-center justify-between gap-2.5 text-xs shadow-xs">
+        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+          <div className="relative min-w-[200px] flex-1">
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search experiments by ID, model, retriever..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-xs focus:outline-indigo-500"
+              className="w-full pl-8 pr-3 py-1.5 bg-[#191b22] border border-[#272a33] rounded-lg text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-hidden focus:border-[#ff5500] transition-all font-mono"
             />
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500 font-medium">Mode:</span>
+            <span className="text-zinc-400 font-medium">Mode:</span>
             <select
               value={modeFilter}
               onChange={(e) => setModeFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+              className="bg-[#191b22] border border-[#272a33] rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-hidden focus:border-[#ff5500] transition-all cursor-pointer font-mono"
             >
               <option value="All">All Modes</option>
               <option value="pipeline">Pipeline Lab</option>
@@ -99,44 +106,48 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500 font-medium">Status:</span>
+            <span className="text-zinc-400 font-medium">Status:</span>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700"
+              className="bg-[#191b22] border border-[#272a33] rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-hidden focus:border-[#ff5500] transition-all cursor-pointer font-mono"
             >
               <option value="All">All Statuses</option>
               <option value="Completed">Completed</option>
+              <option value="Completed with errors">Completed with errors</option>
               <option value="Running">Running</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
               <option value="Failed">Failed</option>
+              <option value="Draft">Draft</option>
             </select>
           </div>
         </div>
 
-        <div className="text-slate-500 font-mono text-xs">
-          {selectedExpIds.length} selected for comparison
+        <div className="text-zinc-400 font-mono text-[11px]">
+          <span className="text-[#ff7733] font-bold">{selectedExpIds.length}</span> selected for comparison
         </div>
       </div>
 
       {/* Sticky Compare Action Bar when 2+ experiments selected */}
       {selectedExpIds.length >= 2 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-xl flex items-center gap-4 text-xs animate-in fade-in slide-in-from-bottom-3 duration-200 border border-slate-700">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-[#15171e] text-zinc-100 px-4 py-2 rounded-xl shadow-2xl flex items-center gap-4 text-xs animate-in fade-in slide-in-from-bottom-3 duration-200 border border-[#2e323e] backdrop-blur-md">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span className="font-semibold">{selectedExpIds.length} compatible runs selected</span>
-            <span className="text-slate-400 font-mono text-[11px]">({selectedExpIds.join(', ')})</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="font-semibold">{selectedExpIds.length} runs selected</span>
+            <span className="text-zinc-400 font-mono text-[10px]">({selectedExpIds.join(', ')})</span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSelectedExpIds([])}
-              className="text-slate-400 hover:text-white px-2 py-1"
+              className="text-zinc-400 hover:text-white px-2 py-1 transition-colors"
             >
               Clear
             </button>
             <button
               onClick={() => onNavigate('compare', { selected: selectedExpIds })}
-              className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1 rounded-md bg-[#ff5500] hover:bg-[#e04b00] text-white font-semibold flex items-center gap-1.5 transition-all shadow-xs"
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span>Compare Selected</span>
@@ -146,12 +157,12 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate
       )}
 
       {/* Main Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
+      <div className="bg-[#15171e] rounded-xl border border-[#272a33] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                <th className="py-3 px-3 w-8 text-center">
+              <tr className="bg-[#181b22] border-b border-[#272a33] text-zinc-400 font-semibold font-mono text-[11px]">
+                <th className="py-2 px-2.5 w-8 text-center">
                   <input
                     type="checkbox"
                     checked={selectedExpIds.length === filteredExperiments.length && filteredExperiments.length > 0}
@@ -162,118 +173,120 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({ onNavigate
                         setSelectedExpIds([]);
                       }
                     }}
-                    className="rounded text-indigo-600 focus:ring-0"
+                    className="rounded text-[#ff5500] focus:ring-0 cursor-pointer accent-[#ff5500]"
                   />
                 </th>
-                <th className="py-3 px-3">Experiment</th>
-                <th className="py-3 px-3">Dataset & Version</th>
-                <th className="py-3 px-3">Mode</th>
-                <th className="py-3 px-3">Configuration</th>
-                <th className="py-3 px-3">Status</th>
-                <th className="py-3 px-3 text-right">Recall@10</th>
-                <th className="py-3 px-3 text-right">NDCG@10</th>
-                <th className="py-3 px-3 text-right">Faithfulness</th>
-                <th className="py-3 px-3 text-right">Relevance</th>
-                <th className="py-3 px-3 text-right">Avg Latency</th>
-                <th className="py-3 px-3 text-right">Cost</th>
-                <th className="py-3 px-4 text-center">Actions</th>
+                <th className="py-2 px-2.5">Experiment</th>
+                <th className="py-2 px-2.5">Dataset & Version</th>
+                <th className="py-2 px-2.5">Mode</th>
+                <th className="py-2 px-2.5">Configuration</th>
+                <th className="py-2 px-2.5">Status</th>
+                <th className="py-2 px-2.5 text-right">Recall@10</th>
+                <th className="py-2 px-2.5 text-right">NDCG@10</th>
+                <th className="py-2 px-2.5 text-right">Faithfulness</th>
+                <th className="py-2 px-2.5 text-right">Relevance</th>
+                <th className="py-2 px-2.5 text-right">Avg Latency</th>
+                <th className="py-2 px-2.5 text-right">Cost</th>
+                <th className="py-2 px-3 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#22252e]">
               {filteredExperiments.map((exp) => {
                 const isSelected = selectedExpIds.includes(exp.id);
                 return (
-                  <tr 
-                    key={exp.id} 
+                  <tr
+                    key={exp.id}
                     className={`transition-colors ${
-                      isSelected ? 'bg-indigo-50/30' : 'hover:bg-slate-50/80'
+                      isSelected
+                        ? 'bg-[#221c1a]'
+                        : 'hover:bg-[#191c23]'
                     }`}
                   >
-                    <td className="py-3 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-2 px-2.5 text-center" onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        disabled={exp.status !== 'Completed'}
                         onChange={() => toggleSelect(exp.id)}
-                        className="rounded text-indigo-600 focus:ring-0 cursor-pointer"
+                        className="rounded text-[#ff5500] focus:ring-0 cursor-pointer accent-[#ff5500]"
                       />
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-2 px-2.5">
                       <button
                         onClick={() => onNavigate('experiment_details', { experimentId: exp.id })}
                         className="hover:underline text-left block"
                       >
                         <div className="flex items-center gap-1.5">
                           <StBadge type="experiment" label={exp.id} />
-                          <span className="font-semibold text-slate-900 text-xs">{exp.name}</span>
+                          <span className="font-semibold text-white text-xs">{exp.name}</span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        <div className="text-[10px] text-zinc-500 font-mono mt-0.5">
                           Author: {exp.author} • Git: {exp.gitCommit}
                         </div>
                       </button>
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="font-medium text-slate-800 text-[11px]">{exp.datasetId}</div>
+                    <td className="py-2 px-2.5">
+                      <div className="font-medium text-zinc-200 text-[11px]">{exp.datasetId}</div>
                       <StBadge type="version" label={exp.datasetVersion} className="text-[10px] py-0 mt-0.5" />
                     </td>
-                    <td className="py-3 px-3">
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                        exp.mode === 'pipeline' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    <td className="py-2 px-2.5">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${
+                        exp.mode === 'pipeline'
+                          ? 'bg-[#261c28] text-purple-300 border border-purple-800/40'
+                          : 'bg-[#1a1c24] text-zinc-300 border border-[#2b2e3a]'
                       }`}>
                         {exp.mode === 'pipeline' ? 'Pipeline Lab' : 'Existing RAG'}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-slate-600 max-w-xs truncate text-[11px] font-mono">
+                    <td className="py-2 px-2.5 text-zinc-400 max-w-xs truncate text-[11px] font-mono">
                       {exp.configurationSummary}
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-2 px-2.5">
                       <StBadge type="status" label={exp.status} />
                     </td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-slate-800">
-                      {metric(exp.metrics.recall10)}
+                    <td className="py-2 px-2.5 text-right font-mono font-medium text-zinc-200">
+                      {display(exp.metrics.recall10)}
                       {exp.deltas?.recall10 && (
-                        <span className={`text-[10px] ml-1 font-normal ${exp.deltas.recall10 > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <span className={`text-[10px] ml-1 font-normal ${exp.deltas.recall10 > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                           ({exp.deltas.recall10 > 0 ? '+' : ''}{exp.deltas.recall10.toFixed(2)})
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-800">
-                      {metric(exp.metrics.ndcg10)}
+                    <td className="py-2 px-2.5 text-right font-mono font-medium text-zinc-300">
+                      {display(exp.metrics.ndcg10)}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-slate-800">
-                      {metric(exp.metrics.faithfulness)}
+                    <td className="py-2 px-2.5 text-right font-mono font-bold text-emerald-400">
+                      {display(exp.metrics.faithfulness)}
                       {exp.deltas?.faithfulness && (
-                        <span className={`text-[10px] ml-1 font-normal ${exp.deltas.faithfulness > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <span className={`text-[10px] ml-1 font-normal ${exp.deltas.faithfulness > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                           ({exp.deltas.faithfulness > 0 ? '+' : ''}{exp.deltas.faithfulness.toFixed(2)})
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-700">
-                      {metric(exp.metrics.answerRelevance)}
+                    <td className="py-2 px-2.5 text-right font-mono text-zinc-300">
+                      {display(exp.metrics.answerRelevance)}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-800">
-                      {seconds(exp.metrics.avgLatency)}
+                    <td className="py-2 px-2.5 text-right font-mono text-zinc-200">
+                      {display(exp.metrics.avgLatency, 's')}
                       {exp.deltas?.avgLatency && (
-                        <span className="text-[10px] text-rose-600 block">
+                        <span className="text-[10px] text-rose-400 block font-normal">
                           (+{exp.deltas.avgLatency}s)
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-600">
-                      {money(exp.metrics.estimatedCost)}
+                    <td className="py-2 px-2.5 text-right font-mono text-zinc-400">
+                      {Number.isFinite(exp.metrics.estimatedCost) ? `$${display(exp.metrics.estimatedCost)}` : 'Not recorded'}
                     </td>
-                    <td className="py-3 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
+                    <td className="py-2 px-3 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => onNavigate('experiment_details', { experimentId: exp.id })}
-                          className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-[11px]"
+                          className="px-2 py-0.5 rounded bg-[#1f222b] hover:bg-[#282c38] text-zinc-300 font-mono text-[10px] border border-[#2e323e] transition-colors"
                         >
                           Details
                         </button>
                         <button
-                          disabled={exp.status !== 'Completed' || !mockExperiments.some(item => item.status === 'Completed' && item.id !== exp.id)}
-                          onClick={() => onNavigate('compare', { selected: [mockExperiments.find(item => item.status === 'Completed' && item.id !== exp.id)?.id, exp.id].filter(Boolean) })}
-                          className="px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-[11px]"
+                          onClick={() => onNavigate('compare', { selected: [mockExperiments.find(item => item.id !== exp.id && item.status !== 'Draft')?.id, exp.id].filter(Boolean) })}
+                          className="px-2 py-0.5 rounded bg-[#251e1b] hover:bg-[#332520] text-[#ff7733] font-mono text-[10px] border border-[#422720] transition-colors"
                         >
                           Compare
                         </button>

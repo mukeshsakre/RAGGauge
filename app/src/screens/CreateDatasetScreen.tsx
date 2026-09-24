@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { StButton, StAlert, StBadge, StCodeBlock } from '../components/ui/StreamlitComponents';
 import { ScreenId } from '../types';
+import { parseDatasetFile } from '../utils/datasetImport';
 import { createDataset } from '../api';
 import { useRAGGauge } from '../context/DataContext';
 import { useToast } from '../context/ToastContext';
@@ -37,6 +38,7 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
     difficulty: 'complexity'
   });
   const [records, setRecords] = useState<Record<string, any>[]>([]);
+  const [corpusVersion, setCorpusVersion] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
   const [importError, setImportError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -45,26 +47,16 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
     const value = record[mappedFields.ground_truth_contexts];
     return Array.isArray(value) ? value.length > 0 : Boolean(value);
   }).length;
-  const categoryCount = new Set(records.map(record => String(record[mappedFields.category] || 'Uncategorized'))).size;
+  const categoryCount = new Set(records.map(record => String(record[mappedFields.category] || record.metadata?.category || 'Uncategorized'))).size;
   const validationPassed = records.length > 0 && emptyQuestions === 0;
 
   const parseFile = async (file: File) => {
     setImportError('');
     try {
-      const text = await file.text();
-      let parsed: Record<string, any>[];
-      if (sourceFormat === 'json') {
-        const value = JSON.parse(text);
-        parsed = Array.isArray(value) ? value : value.cases;
-      } else if (sourceFormat === 'jsonl') {
-        parsed = text.split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line));
-      } else {
-        const rows = text.split(/\r?\n/).filter(Boolean).map(row => row.split(',').map(cell => cell.trim()));
-        const headers = rows.shift() || [];
-        parsed = rows.map(row => Object.fromEntries(headers.map((header, index) => [header, row[index] || ''])));
-      }
-      if (!Array.isArray(parsed) || !parsed.length) throw new Error('The file contains no cases.');
-      if (parsed.length > 10000) throw new Error('The file exceeds the 10,000 case limit.');
+      if (file.size > 50 * 1024 * 1024) throw new Error('The file exceeds the 50 MB limit.');
+      const {records: parsed, corpusVersion: importedCorpus} = parseDatasetFile(await file.text(), sourceFormat);
+      setCorpusVersion(importedCorpus);
+      if ('question' in parsed[0]) setMappedFields({case_id:'id', question:'question', ground_truth_answer:'reference_answer', ground_truth_contexts:'ground_truth_contexts', expected_document_ids:'expected_document_ids', category:'category', difficulty:'difficulty'});
       setRecords(parsed);
       setFileName(file.name);
     } catch (error) {
@@ -94,19 +86,20 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
           question,
           reference_answer: record[mappedFields.ground_truth_answer] || null,
           ground_truth_contexts: Array.isArray(contexts) ? contexts.map(String) : contexts ? [String(contexts)] : null,
-          relevance: documentIds.length ? {
+          relevance: record.relevance || (documentIds.length ? {
             level: 'document', labels: Object.fromEntries(documentIds.map(documentId => [documentId, 1])),
             graded: false, exhaustive: true, unjudged_as_irrelevant: false,
-          } : null,
-          evidence: [],
+          } : null),
+          evidence: record.evidence || [],
           metadata: {
-            category: record[mappedFields.category] || 'Uncategorized',
-            difficulty: record[mappedFields.difficulty] || 'Medium',
+            ...(record.metadata || {}),
+            category: record[mappedFields.category] || record.metadata?.category || 'Uncategorized',
+            difficulty: record[mappedFields.difficulty] || record.metadata?.difficulty || 'Medium',
             description: datasetDesc,
           },
         };
       });
-      const created = await createDataset({ id, name: datasetName.trim(), version: 1, corpus_version: null, cases });
+      const created = await createDataset({ id, name: datasetName.trim(), version: 1, corpus_version: corpusVersion, cases });
       await refresh();
       showToast({ type: 'success', title: 'Dataset created', message: `${cases.length} cases persisted.` });
       onNavigate('dataset_detail', { datasetId: created.id });
@@ -126,17 +119,17 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-4">
       {/* Stepper Header */}
-      <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs">
+      <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-5 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">Create New Evaluation Dataset</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="text-lg font-bold text-white">Create New Evaluation Dataset</h1>
+            <p className="text-xs text-zinc-400 mt-0.5">
               Upload, map, and validate your golden dataset to ensure reproducible RAG benchmarking.
             </p>
           </div>
-          <span className="text-xs font-mono px-2.5 py-1 rounded bg-slate-100 text-slate-700 font-semibold">
+          <span className="text-xs font-mono px-2.5 py-1 rounded bg-[#1e2129] text-zinc-300 font-semibold">
             Step {currentStep} of 5
           </span>
         </div>
@@ -150,11 +143,11 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
               <div key={s.num} className="text-center">
                 <div 
                   className={`h-1.5 rounded-full mb-1.5 transition-all ${
-                    isDone ? 'bg-emerald-500' : isCurrent ? 'bg-indigo-600' : 'bg-slate-200'
+                    isDone ? 'bg-emerald-500' : isCurrent ? 'bg-[#ff5500]' : 'bg-[#272a33]'
                   }`}
                 />
                 <span className={`text-[11px] font-medium block truncate ${
-                  isCurrent ? 'text-indigo-700 font-bold' : isDone ? 'text-emerald-700' : 'text-slate-400'
+                  isCurrent ? 'text-[#ff7733] font-bold' : isDone ? 'text-emerald-400' : 'text-zinc-500'
                 }`}>
                   {s.label}
                 </span>
@@ -166,47 +159,47 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
       {/* Step 1: Dataset Info */}
       {currentStep === 1 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
-          <h2 className="text-sm font-bold text-slate-900">Dataset Metadata & Specification</h2>
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
+          <h2 className="text-sm font-bold text-white">Dataset Metadata & Specification</h2>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Dataset Name *</label>
+            <label className="block text-xs font-semibold text-zinc-300 mb-1">Dataset Name *</label>
             <input
               type="text"
               value={datasetName}
               onChange={(e) => setDatasetName(e.target.value)}
-              className="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded font-medium focus:outline-indigo-500"
+              className="w-full text-xs p-2.5 bg-[#191b22] border border-[#2e323e] rounded font-medium focus:outline-[#ff5500]"
               placeholder="e.g. Legal Contract Clauses v1"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Description & Benchmark Purpose *</label>
+            <label className="block text-xs font-semibold text-zinc-300 mb-1">Description & Benchmark Purpose *</label>
             <textarea
               rows={3}
               value={datasetDesc}
               onChange={(e) => setDatasetDesc(e.target.value)}
-              className="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded focus:outline-indigo-500 leading-relaxed"
+              className="w-full text-xs p-2.5 bg-[#191b22] border border-[#2e323e] rounded focus:outline-[#ff5500] leading-relaxed"
               placeholder="Describe the target queries, expected document corpora, and domain nuances..."
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Target Version</label>
+              <label className="block text-xs font-semibold text-zinc-300 mb-1">Initial Target Version</label>
               <input
                 type="text"
                 disabled
                 value="v1.0 (Immutable)"
-                className="w-full text-xs p-2.5 bg-slate-100 border border-slate-200 rounded font-mono text-slate-600"
+                className="w-full text-xs p-2.5 bg-[#1e2129] border border-[#272a33] rounded font-mono text-zinc-400"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Domain Tags</label>
+              <label className="block text-xs font-semibold text-zinc-300 mb-1">Domain Tags</label>
               <input
                 type="text"
                 defaultValue="billing, api, enterprise-tier, golden"
-                className="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded font-mono text-xs focus:outline-indigo-500"
+                className="w-full text-xs p-2.5 bg-[#191b22] border border-[#2e323e] rounded font-mono text-xs focus:outline-[#ff5500]"
               />
             </div>
           </div>
@@ -215,16 +208,16 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
       {/* Step 2: Import Cases */}
       {currentStep === 2 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">Source Format & Upload</h2>
+            <h2 className="text-sm font-bold text-white">Source Format & Upload</h2>
             <div className="flex gap-1">
               {(['jsonl', 'csv', 'json'] as const).map(fmt => (
                 <button
                   key={fmt}
                   onClick={() => setSourceFormat(fmt)}
                   className={`px-3 py-1 rounded text-xs font-mono font-medium uppercase transition-colors ${
-                    sourceFormat === fmt ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    sourceFormat === fmt ? 'bg-[#ff5500] text-white' : 'bg-[#1e2129] text-zinc-400 hover:bg-[#272a33]'
                   }`}
                 >
                   .{fmt}
@@ -234,17 +227,17 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
           </div>
 
           {/* Drag and Drop Zone */}
-          <label className="relative block border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-indigo-400 bg-slate-50/50 transition-colors cursor-pointer">
+          <label className="relative block border-2 border-dashed border-[#2e323e] rounded-lg p-8 text-center hover:border-[#ff5500] bg-[#191b22]/50 transition-colors cursor-pointer">
             <input type="file" accept={`.${sourceFormat}`} className="absolute inset-0 opacity-0 cursor-pointer" onChange={event => event.target.files?.[0] && parseFile(event.target.files[0])} />
-            <Upload className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
-            <div className="text-sm font-semibold text-slate-800">
+            <Upload className="w-8 h-8 text-[#ff7733] mx-auto mb-2" />
+            <div className="text-sm font-semibold text-zinc-200">
               Drag and drop your .{sourceFormat.toUpperCase()} file here, or click to browse
             </div>
-            <div className="text-xs text-slate-500 mt-1">
+            <div className="text-xs text-zinc-400 mt-1">
               Supports standard benchmark exports up to 50MB (max 10,000 cases)
             </div>
             <div className="mt-3 inline-block">
-              <span className="text-xs px-2.5 py-1 rounded bg-emerald-50 text-emerald-700 font-mono border border-emerald-200">
+              <span className="text-xs px-2.5 py-1 rounded bg-emerald-950/30 text-emerald-400 font-mono border border-emerald-200">
                 {fileName ? `Loaded ${fileName} (${records.length} cases detected)` : 'No file selected'}
               </span>
             </div>
@@ -253,9 +246,9 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
           {/* Sample Raw Preview */}
           <div>
-            <div className="text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
+            <div className="text-xs font-semibold text-zinc-300 mb-1 flex items-center justify-between">
               <span>Detected Records (First 2 Lines Preview)</span>
-              <span className="text-[11px] text-slate-400 font-mono">{records.length} records parsed</span>
+              <span className="text-[11px] text-zinc-500 font-mono">{records.length} records parsed</span>
             </div>
             <StCodeBlock
               code={records.length ? records.slice(0, 2).map(record => JSON.stringify(record)).join('\n') : 'Select a file to preview parsed records.'}
@@ -268,93 +261,70 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
       {/* Step 3: Map Fields */}
       {currentStep === 3 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Field Schema Mapping</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-sm font-bold text-white">Field Schema Mapping</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">
               Map the columns detected in your upload to RAGGauge standard evaluation properties.
             </p>
           </div>
 
-          <div className="divide-y divide-slate-100 text-xs">
+          <div className="divide-y divide-[#242730] text-xs">
             <div className="py-2.5 flex items-center justify-between gap-4">
               <div>
-                <span className="font-semibold text-slate-800">Case ID</span>
-                <span className="text-rose-600 font-bold ml-1">*</span>
-                <div className="text-slate-400 text-[11px]">Unique identifier per evaluation case</div>
+                <span className="font-semibold text-zinc-200">Case ID</span>
+                <span className="text-rose-400 font-bold ml-1">*</span>
+                <div className="text-zinc-500 text-[11px]">Unique identifier per evaluation case</div>
               </div>
               <select 
-                value={mappedFields.case_id}
-                onChange={(e) => setMappedFields({ ...mappedFields, case_id: e.target.value })}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded font-mono text-xs text-slate-800"
-              >
-                <option value="id">id</option>
-                <option value="case_id">case_id</option>
-                <option value="uid">uid</option>
+                value={mappedFields.case_id} onChange={e => setMappedFields({...mappedFields, case_id: e.target.value})} className="p-2 bg-[#191b22] border border-[#272a33] rounded-lg">
+                <option value="">Not mapped</option>{[...new Set([...Object.keys(records[0] || {}), mappedFields.case_id] )].filter(Boolean).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
             </div>
 
             <div className="py-2.5 flex items-center justify-between gap-4">
               <div>
-                <span className="font-semibold text-slate-800">Question / Query</span>
-                <span className="text-rose-600 font-bold ml-1">*</span>
-                <div className="text-slate-400 text-[11px]">The input query supplied to the RAG pipeline</div>
+                <span className="font-semibold text-zinc-200">Question / Query</span>
+                <span className="text-rose-400 font-bold ml-1">*</span>
+                <div className="text-zinc-500 text-[11px]">The input query supplied to the RAG pipeline</div>
               </div>
               <select 
-                value={mappedFields.question}
-                onChange={(e) => setMappedFields({ ...mappedFields, question: e.target.value })}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded font-mono text-xs text-slate-800"
-              >
-                <option value="query_text">query_text</option>
-                <option value="question">question</option>
-                <option value="prompt">prompt</option>
+                value={mappedFields.question} onChange={e => setMappedFields({...mappedFields, question: e.target.value})} className="p-2 bg-[#191b22] border border-[#272a33] rounded-lg">
+                <option value="">Not mapped</option>{[...new Set([...Object.keys(records[0] || {}), mappedFields.question] )].filter(Boolean).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
             </div>
 
             <div className="py-2.5 flex items-center justify-between gap-4">
               <div>
-                <span className="font-semibold text-slate-800">Ground Truth Answer</span>
-                <span className="text-rose-600 font-bold ml-1">*</span>
-                <div className="text-slate-400 text-[11px]">Vetted factual answer used for Judge comparison</div>
+                <span className="font-semibold text-zinc-200">Ground Truth Answer</span>
+                <span className="text-rose-400 font-bold ml-1">*</span>
+                <div className="text-zinc-500 text-[11px]">Vetted factual answer used for Judge comparison</div>
               </div>
               <select 
-                value={mappedFields.ground_truth_answer}
-                onChange={(e) => setMappedFields({ ...mappedFields, ground_truth_answer: e.target.value })}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded font-mono text-xs text-slate-800"
-              >
-                <option value="golden_answer">golden_answer</option>
-                <option value="ground_truth">ground_truth</option>
-                <option value="expected_answer">expected_answer</option>
+                value={mappedFields.ground_truth_answer} onChange={e => setMappedFields({...mappedFields, ground_truth_answer: e.target.value})} className="p-2 bg-[#191b22] border border-[#272a33] rounded-lg">
+                <option value="">Not mapped</option>{[...new Set([...Object.keys(records[0] || {}), mappedFields.ground_truth_answer] )].filter(Boolean).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
             </div>
 
             <div className="py-2.5 flex items-center justify-between gap-4">
               <div>
-                <span className="font-semibold text-slate-800">Ground Truth Contexts</span>
-                <div className="text-slate-400 text-[11px]">Exact source paragraphs required for Context Recall</div>
+                <span className="font-semibold text-zinc-200">Ground Truth Contexts</span>
+                <div className="text-zinc-500 text-[11px]">Exact source paragraphs required for Context Recall</div>
               </div>
               <select 
-                value={mappedFields.ground_truth_contexts}
-                onChange={(e) => setMappedFields({ ...mappedFields, ground_truth_contexts: e.target.value })}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded font-mono text-xs text-slate-800"
-              >
-                <option value="relevant_snippets">relevant_snippets</option>
-                <option value="golden_contexts">golden_contexts</option>
+                value={mappedFields.ground_truth_contexts} onChange={e => setMappedFields({...mappedFields, ground_truth_contexts: e.target.value})} className="p-2 bg-[#191b22] border border-[#272a33] rounded-lg">
+                <option value="">Not mapped</option>{[...new Set([...Object.keys(records[0] || {}), mappedFields.ground_truth_contexts] )].filter(Boolean).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
             </div>
 
             <div className="py-2.5 flex items-center justify-between gap-4">
               <div>
-                <span className="font-semibold text-slate-800">Category / Intent</span>
-                <div className="text-slate-400 text-[11px]">Cluster for failure categorization</div>
+                <span className="font-semibold text-zinc-200">Category / Intent</span>
+                <div className="text-zinc-500 text-[11px]">Cluster for failure categorization</div>
               </div>
               <select 
-                value={mappedFields.category}
-                onChange={(e) => setMappedFields({ ...mappedFields, category: e.target.value })}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded font-mono text-xs text-slate-800"
-              >
-                <option value="intent_cluster">intent_cluster</option>
-                <option value="category">category</option>
+                value={mappedFields.category} onChange={e => setMappedFields({...mappedFields, category: e.target.value})} className="p-2 bg-[#191b22] border border-[#272a33] rounded-lg">
+                <option value="">Not mapped</option>{[...new Set([...Object.keys(records[0] || {}), mappedFields.category] )].filter(Boolean).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
             </div>
           </div>
@@ -363,9 +333,9 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
       {/* Step 4: Validate */}
       {currentStep === 4 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">Pre-Commit Validation Report</h2>
+            <h2 className="text-sm font-bold text-white">Pre-Commit Validation Report</h2>
             <StBadge type="status" label={validationPassed ? "Validation Passed" : "Validation Required"} />
           </div>
 
@@ -374,21 +344,21 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
           </StAlert>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-500">Valid Records</div>
-              <div className="text-lg font-bold font-mono text-emerald-700">{records.length - emptyQuestions}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-400">Valid Records</div>
+              <div className="text-lg font-bold font-mono text-emerald-400">{records.length - emptyQuestions}</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-500">Empty Questions</div>
-              <div className="text-lg font-bold font-mono text-slate-800">{emptyQuestions}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-400">Empty Questions</div>
+              <div className="text-lg font-bold font-mono text-zinc-200">{emptyQuestions}</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-500">Context Coverage</div>
-              <div className="text-lg font-bold font-mono text-emerald-700">{records.length ? `${Math.round(contextCases / records.length * 100)}%` : '—'}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-400">Context Coverage</div>
+              <div className="text-lg font-bold font-mono text-emerald-400">{records.length ? `${Math.round(contextCases / records.length * 100)}%` : '—'}</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-500">Categories</div>
-              <div className="text-lg font-bold font-mono text-indigo-700">{categoryCount}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-400">Categories</div>
+              <div className="text-lg font-bold font-mono text-[#ff7733]">{categoryCount}</div>
             </div>
           </div>
         </div>
@@ -396,16 +366,16 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
 
       {/* Step 5: Create Version */}
       {currentStep === 5 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5 text-center py-10">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5 text-center py-10">
+          <div className="w-12 h-12 bg-emerald-950/40 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2">
             <CheckCircle2 className="w-6 h-6" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">Ready to Commit Immutable Version v1.0</h2>
-          <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+          <h2 className="text-lg font-bold text-white">Ready to Commit Immutable Version v1.0</h2>
+          <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
             {datasetName} will be committed with {records.length} imported cases. Once created and evaluated, this version cannot be modified in place.
           </p>
 
-          <div className="max-w-md mx-auto p-3 bg-slate-50 rounded border border-slate-200 text-xs font-mono text-slate-700 text-left space-y-1">
+          <div className="max-w-md mx-auto p-3 bg-[#191b22] rounded border border-[#272a33] text-xs font-mono text-zinc-300 text-left space-y-1">
             <div><strong>Name:</strong> {datasetName}</div>
             <div><strong>Version:</strong> v1.0</div>
             <div><strong>Total Cases:</strong> {records.length}</div>
@@ -424,6 +394,7 @@ export const CreateDatasetScreen: React.FC<CreateDatasetScreenProps> = ({ onNavi
         </div>
       )}
 
+      {importError && <StAlert type="error">{importError}</StAlert>}
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between pt-2">
         <StButton

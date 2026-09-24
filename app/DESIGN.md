@@ -1,4 +1,4 @@
-# RAGGauge — Design System & Engineering Architecture
+# RAGGUAGE — Design System & Engineering Architecture
 Reference inspiration: [inithabits.com](https://inithabits.com/)  
 Implementation pattern: Pure Streamlit mental model (reproducible primitives, vertical density, contextual expanders, immutable state)
 
@@ -6,7 +6,7 @@ Implementation pattern: Pure Streamlit mental model (reproducible primitives, ve
 
 ## 1. Product & Design Philosophy
 
-RAGGauge is an engineering workbench for evaluating, benchmarking, comparing, diagnosing, and improving Retrieval-Augmented Generation (RAG) systems. It serves AI Engineers, RAG Engineers, ML Engineers, and Technical Architects.
+RAGGUAGE is an engineering workbench for evaluating, benchmarking, comparing, diagnosing, and improving Retrieval-Augmented Generation (RAG) systems. It serves AI Engineers, RAG Engineers, ML Engineers, and Technical Architects.
 
 ### Core Principles
 1. **Evidence Before Decoration**:

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  Database, 
-  FlaskConical, 
-  GitCompare, 
-  Sliders, 
-  Search, 
-  Cpu, 
-  Workflow, 
-  ShieldCheck, 
-  Settings, 
-  PanelLeftClose, 
-  PanelLeftOpen, 
-  RefreshCw, 
+import {
+  BarChart3,
+  Database,
+  FlaskConical,
+  GitCompare,
+  Sliders,
+  Search,
+  Cpu,
+  Workflow,
+  ShieldCheck,
+  Settings,
+  PanelLeftClose,
+  PanelLeftOpen,
+  RefreshCw,
+  Code2,
   ChevronRight,
   Sparkles,
   Zap,
@@ -25,14 +26,18 @@ import {
   FileSpreadsheet,
   CheckCircle2,
   Bell,
-  LogOut
+  User,
+  LogOut,
+  Gauge
 } from 'lucide-react';
+import { useRAGGauge } from '../../context/DataContext';
 import { ScreenId } from '../../types';
 import { StBadge, StButton } from '../ui/StreamlitComponents';
 import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { CommandPalette } from '../navigation/CommandPalette';
-import { useRAGGauge } from '../../context/DataContext';
+import { StreamlitCodeModal } from '../modals/StreamlitCodeModal';
 
 interface StreamlitShellProps {
   currentScreen: ScreenId;
@@ -49,6 +54,7 @@ interface StreamlitShellProps {
   };
   contextBadge?: string;
   children: React.ReactNode;
+  onOpenCodeModal?: () => void;
 }
 
 export const StreamlitShell: React.FC<StreamlitShellProps> = ({
@@ -59,18 +65,21 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
   secondaryAction,
   contextBadge,
   children,
+  onOpenCodeModal
 }) => {
+  const { snapshot, refresh } = useRAGGauge();
+  const latestRun = [...snapshot.runs].reverse()[0];
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+  const [activeProject, setActiveProject] = useState('default workspace');
   const [projectDropdownOpen, setProjectDropdownOpen] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
   const { showToast } = useToast();
-  const { snapshot, refresh, signOut } = useRAGGauge();
-  const [activeProject, setActiveProject] = useState(
-    snapshot.datasets[0]?.name || 'Default workspace'
-  );
+  const { user, logout } = useAuth();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   // Keyboard shortcut for Command Palette (⌘K or Ctrl+K)
   useEffect(() => {
@@ -86,44 +95,18 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    showToast({
-      type: 'info',
-      title: 'Syncing telemetry...',
-      message: 'Fetching persisted records from the local API.'
-    });
-    try {
-      await refresh();
-      setIsRefreshing(false);
-      showToast({
-        type: 'success',
-        title: 'Workspace refreshed',
-        message: 'Persisted datasets, runs, comparisons, and jobs are up to date.'
-      });
-    } catch (error) {
-      setIsRefreshing(false);
-      showToast({
-        type: 'error',
-        title: 'Refresh failed',
-        message: error instanceof Error ? error.message : 'Unable to refresh the workspace.'
-      });
-    }
+    try { await refresh(); showToast({type:'success', title:'Workspace synced', message:'Persisted data refreshed.'}); }
+    catch (reason) { showToast({type:'error', title:'Refresh failed', message:reason instanceof Error ? reason.message : 'API unavailable'}); }
+    finally { setIsRefreshing(false); }
   };
-
-  const projects = snapshot.datasets.map(dataset => ({
-    id: dataset.id,
-    name: dataset.name,
-    cases: dataset.cases?.length || 0,
-    target: `v${dataset.version}`,
-  }));
-  const latestRun = snapshot.runs.at(-1);
-  const activeJobs = snapshot.jobs.filter(job => ['PENDING', 'RUNNING'].includes(job.status)).length;
+  const projects = [{id:'default', name:'default workspace', cases:snapshot.datasets.reduce((sum, item) => sum + item.cases.length, 0), target:`${snapshot.datasets.length} datasets`}];
 
   const navItems = [
-    { id: 'overview' as ScreenId, label: 'Overview', icon: BarChart3, badge: activeJobs ? `${activeJobs} live` : undefined },
+    { id: 'overview' as ScreenId, label: 'Overview', icon: BarChart3, badge: 'Live' },
     { id: 'datasets' as ScreenId, label: 'Datasets', icon: Database, badge: String(snapshot.datasets.length) },
     { id: 'experiments' as ScreenId, label: 'Experiments', icon: FlaskConical, badge: String(snapshot.runs.length) },
-    { id: 'compare' as ScreenId, label: 'Compare Runs', icon: GitCompare, badge: String(snapshot.comparisons.length) },
-    { id: 'pipeline_lab' as ScreenId, label: 'Pipeline Lab', icon: Sliders },
+    { id: 'compare' as ScreenId, label: 'Compare Runs', icon: GitCompare, badge: 'Diff' },
+    { id: 'pipeline_lab' as ScreenId, label: 'Pipeline Lab', icon: Sliders, badge: 'Sandbox' },
     { id: 'case_detail' as ScreenId, label: 'Case Explorer', icon: Search }
   ];
 
@@ -134,56 +117,58 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
     { id: 'settings' as ScreenId, label: 'Settings', icon: Settings }
   ];
 
+  const openCodeModalHandler = onOpenCodeModal || (() => setIsCodeModalOpen(true));
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#07090E] text-slate-900 dark:text-slate-100 flex flex-col antialiased transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#0d0f12] text-zinc-100 flex flex-col antialiased transition-colors duration-200 selection:bg-[#ff5500] selection:text-white">
       {/* Top Telemetry Ticker & Navigation Bar */}
-      <header className="h-12 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/80 px-4 flex items-center justify-between text-xs select-none z-30 sticky top-0">
-        <div className="flex items-center gap-3">
+      <header className="h-11 bg-[#131519] border-b border-[#22252c] px-3.5 flex items-center justify-between text-xs select-none z-30 sticky top-0">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors"
+            className="p-1 hover:bg-[#1f2229] rounded-md text-zinc-400 hover:text-zinc-200 transition-colors"
             title={sidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
           </button>
-          
+
           {/* Logo */}
-          <div 
+          <div
             onClick={() => onNavigate('overview')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex items-center gap-2 cursor-pointer group"
           >
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-bold shadow-xs shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-              <Zap className="w-4 h-4 fill-white text-white" />
+            <div className="w-6 h-6 rounded-md bg-[#ff5500] text-white flex items-center justify-center text-xs font-bold shadow-xs shadow-orange-500/30 group-hover:scale-105 transition-transform">
+              <Zap className="w-3.5 h-3.5 fill-white text-white" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white">
+              <span className="font-extrabold text-xs tracking-wider text-white font-mono">
                 RAGGauge
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 font-semibold">
-                v0.1.0
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#1f222a] text-[#ff7733] border border-[#303440] font-semibold">
+                v1.4.2
               </span>
             </div>
           </div>
 
-          <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1 hidden sm:block" />
+          <div className="h-3.5 w-[1px] bg-[#262932] mx-1 hidden sm:block" />
 
           {/* Project Switcher Dropdown */}
           <div className="relative hidden md:block">
             <button
               onClick={() => setProjectDropdownOpen(!projectDropdownOpen)}
-              className="flex items-center gap-2 px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-[#1a1c22] text-xs font-medium text-zinc-300 transition-colors border border-transparent hover:border-[#272a33]"
             >
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="max-w-[170px] truncate">{activeProject}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="max-w-[170px] truncate text-[11px] font-mono">{activeProject}</span>
+              <ChevronDown className="w-3 h-3 text-zinc-400" />
             </button>
 
             {projectDropdownOpen && (
-              <div 
-                className="absolute left-0 mt-1.5 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-50 text-xs animate-in fade-in duration-100"
+              <div
+                className="absolute left-0 mt-1 w-64 bg-[#16181e] border border-[#2b2e38] rounded-xl shadow-2xl py-1.5 z-50 text-xs animate-in fade-in duration-100"
                 onClick={() => setProjectDropdownOpen(false)}
               >
-                <div className="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                <div className="px-3 py-1 text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
                   Benchmark Suites
                 </div>
                 {projects.map((proj) => (
@@ -197,15 +182,15 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
                         message: `Loaded ${proj.name} (${proj.cases} test cases)`
                       });
                     }}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
-                      activeProject === proj.name ? 'text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/50 dark:bg-indigo-950/30' : 'text-slate-700 dark:text-slate-300'
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#20232a] transition-colors ${
+                      activeProject === proj.name ? 'text-[#ff5500] font-semibold bg-[#221c1a]' : 'text-zinc-300'
                     }`}
                   >
                     <div>
-                      <div className="truncate">{proj.name}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">{proj.cases} cases • {proj.target}</div>
+                      <div className="truncate text-xs">{proj.name}</div>
+                      <div className="text-[10px] text-zinc-400 mt-0.5 font-mono">{proj.cases} cases • {proj.target}</div>
                     </div>
-                    {activeProject === proj.name && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0 ml-2" />}
+                    {activeProject === proj.name && <CheckCircle2 className="w-3.5 h-3.5 text-[#ff5500] shrink-0 ml-2" />}
                   </button>
                 ))}
               </div>
@@ -214,43 +199,43 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
         </div>
 
         {/* Center: Command Palette Trigger */}
-        <div className="flex-1 max-w-md mx-4 hidden lg:block">
+        <div className="flex-1 max-w-sm mx-3 hidden lg:block">
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-850 dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all shadow-2xs"
+            className="w-full flex items-center justify-between px-2.5 py-1 rounded-lg bg-[#181a20] border border-[#272a33] text-zinc-400 hover:text-zinc-200 text-xs hover:border-[#ff5500]/50 transition-all"
           >
             <div className="flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Search benchmarks, cases, configs...</span>
+              <Search className="w-3.5 h-3.5 text-[#ff5500]" />
+              <span className="text-[11px]">Search benchmarks, cases, configs...</span>
             </div>
-            <div className="flex items-center gap-1 font-mono text-[10px] bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-500">
+            <div className="flex items-center gap-0.5 font-mono text-[10px] bg-[#121316] px-1.5 py-0.2 rounded border border-[#262830] text-zinc-400">
               <span>⌘</span>
               <span>K</span>
             </div>
           </button>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
+        {/* Right Actions: Quick Flows, Streamlit Code, Theme Toggle */}
+        <div className="flex items-center gap-1.5">
           {/* Quick Flow Pills */}
-          <div className="hidden xl:flex items-center gap-1 bg-slate-100 dark:bg-slate-900/90 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px]">
+          <div className="hidden xl:flex items-center gap-0.5 bg-[#17191f] p-0.5 rounded-lg border border-[#272a32] text-[11px]">
             <button
               onClick={() => onNavigate('new_experiment')}
-              className="px-2 py-0.5 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-600 dark:text-slate-300 font-medium transition-all"
+              className="px-2 py-0.5 rounded hover:bg-[#22252e] hover:text-[#ff5500] text-zinc-300 font-medium transition-all"
               title="Launch RAG Evaluation Run"
             >
               Eval
             </button>
             <button
               onClick={() => onNavigate('pipeline_lab')}
-              className="px-2 py-0.5 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-600 dark:text-slate-300 font-medium transition-all"
+              className="px-2 py-0.5 rounded hover:bg-[#22252e] hover:text-[#ff5500] text-zinc-300 font-medium transition-all"
               title="Open Interactive Pipeline Tuning Sandbox"
             >
               Lab
             </button>
             <button
               onClick={() => onNavigate('compare')}
-              className="px-2 py-0.5 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-600 dark:text-slate-300 font-medium transition-all"
+              className="px-2 py-0.5 rounded hover:bg-[#22252e] hover:text-[#ff5500] text-zinc-300 font-medium transition-all"
               title="Compare Candidate vs Baseline Runs"
             >
               Compare
@@ -260,70 +245,117 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
           {/* Search button on small screens */}
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="lg:hidden p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="lg:hidden p-1.5 rounded-md text-zinc-400 hover:bg-[#1f2229] transition-colors"
             title="Search (Cmd+K)"
           >
             <Search className="w-4 h-4" />
           </button>
 
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-md border border-[#272a32] text-zinc-400 hover:text-zinc-200 hover:bg-[#1f2229] transition-colors"
             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-zinc-400" />}
           </button>
 
-          <span className="hidden sm:inline-flex px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold">
-            {snapshot.user.username} · {snapshot.user.role}
-          </span>
-          <button
-            onClick={() => void signOut()}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="Sign out"
-            aria-label="Sign out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          {/* User Account / Login Switcher Button */}
+          <div className="relative">
+            <button
+              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+              className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-lg border border-[#272a32] hover:bg-[#1f2229] transition-colors text-xs"
+            >
+              <div className="w-5 h-5 rounded bg-gradient-to-tr from-[#ff5500] to-amber-500 text-white flex items-center justify-center font-bold text-[9px] font-mono">
+                {user ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2) : 'MS'}
+              </div>
+              <span className="hidden md:inline font-semibold text-zinc-200 truncate max-w-[100px] text-[11px]">
+                {user ? user.name : 'Mukesh Sakre'}
+              </span>
+              <ChevronDown className="w-3 h-3 text-zinc-400" />
+            </button>
+
+            {userDropdownOpen && (
+              <div
+                className="absolute right-0 mt-1.5 w-60 bg-[#16181e] border border-[#2a2d36] rounded-xl shadow-2xl py-1.5 z-50 text-xs animate-in fade-in duration-100"
+                onClick={() => setUserDropdownOpen(false)}
+              >
+                <div className="px-3 py-2 border-b border-[#252832]">
+                  <div className="font-bold text-white text-xs">{user?.name || 'Mukesh Sakre'}</div>
+                  <div className="text-[10px] text-zinc-400 font-mono truncate">{user?.email || 'mukeshsakre.85@gmail.com'}</div>
+                  <div className="text-[10px] text-[#ff7733] mt-0.5 font-semibold">{user?.role || 'Lead Applied AI / RAG Engineer'}</div>
+                </div>
+
+                <div className="py-1">
+                  <button
+                    onClick={() => { void logout(); onNavigate('overview'); }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-[#20232a] text-zinc-300 flex items-center gap-2 text-xs"
+                  >
+                    <User className="w-3.5 h-3.5 text-[#ff5500]" />
+                    <span>Switch Engineer / Login</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      showToast({
+                        type: 'info',
+                        title: 'Signed Out',
+                        message: 'Session ended. Returned to login portal.'
+                      });
+                      onNavigate('login');
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-rose-950/40 text-rose-400 flex items-center gap-2 text-xs"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Modern Sleek Left Sidebar */}
-        <aside 
-          className={`bg-white dark:bg-[#0B0F19] border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-200 z-20 ${
-            sidebarOpen ? 'w-64' : 'w-0 overflow-hidden border-r-0'
+        {/* Compact Sleek Left Sidebar */}
+        <aside
+          className={`bg-[#14161b] border-r border-[#22252c] flex flex-col shrink-0 transition-all duration-200 z-20 ${
+            sidebarOpen ? 'w-56' : 'w-0 overflow-hidden border-r-0'
           }`}
         >
           {/* Active Suite Card */}
-          <div className="p-3.5 border-b border-slate-100 dark:border-slate-800/80">
-            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+          <div className="p-2.5 border-b border-[#22252c]">
+            <div
+              onClick={() => onNavigate('experiment_details', { experimentId: latestRun?.id })}
+              className="p-2 rounded-lg bg-[#191b21] border border-[#272a33] hover:border-[#ff5500]/50 transition-colors cursor-pointer flex items-center justify-between"
+              title="Click to view run evidence and metrics"
+            >
               <div className="min-w-0">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
                   Target Evaluation Run
                 </div>
-                <div className="text-xs font-bold text-slate-900 dark:text-white font-mono truncate mt-0.5">
-                  {latestRun?.id || 'No persisted runs'}
+                <div className="text-[11px] font-bold text-white font-mono truncate mt-0.5">
+                  {latestRun?.id || 'No persisted run'}
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                {latestRun?.status || 'EMPTY'}
+              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                {latestRun?.status || 'IDLE'}
               </span>
             </div>
           </div>
 
           {/* Primary Navigation Sections */}
-          <div className="flex-1 overflow-y-auto py-3 px-3 space-y-5">
+          <div className="flex-1 overflow-y-auto py-2.5 px-2 space-y-4">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 mb-1.5 flex items-center justify-between">
+              <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 px-2.5 mb-1 flex items-center justify-between">
                 <span>Benchmarking Core</span>
-                <span className="text-[9px] font-mono text-slate-400">RAG</span>
+                <span className="text-[8px] font-mono text-zinc-400">RAG</span>
               </div>
-              <nav className="space-y-1">
+              <nav className="space-y-0.5">
                 {navItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = currentScreen === item.id || 
+                  const isActive = currentScreen === item.id ||
                     (item.id === 'experiments' && ['new_experiment', 'experiment_running', 'experiment_details'].includes(currentScreen)) ||
                     (item.id === 'datasets' && ['dataset_detail', 'create_dataset'].includes(currentScreen)) ||
                     (item.id === 'compare' && ['regression_analysis', 'recommendation'].includes(currentScreen));
@@ -333,21 +365,21 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
                       key={item.id}
                       id={`sidebar-nav-${item.id}`}
                       onClick={() => onNavigate(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         isActive
-                          ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-850 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
+                          ? 'bg-[#ff5500] text-white font-semibold shadow-xs shadow-orange-500/30'
+                          : 'text-zinc-300 hover:bg-[#1d2027] hover:text-white'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-zinc-400'}`} />
                         <span className="truncate">{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
-                          isActive 
-                            ? 'bg-indigo-700/80 text-white' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                        <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+                          isActive
+                            ? 'bg-[#e04b00] text-white font-bold'
+                            : 'bg-[#1e2128] text-zinc-400 border border-[#2b2e38]'
                         }`}>
                           {item.badge}
                         </span>
@@ -358,12 +390,12 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
               </nav>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 mb-1.5">
+            <div className="pt-2 border-t border-[#22252c]">
+              <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 px-2.5 mb-1">
                 Engineering Governance
               </div>
-              <nav className="space-y-1">
-                {(snapshot.user.role === 'ADMIN' ? adminNavItems : []).map((item) => {
+              <nav className="space-y-0.5">
+                {adminNavItems.filter(item => snapshot.user.role === 'ADMIN' || !['configuration','settings'].includes(item.id)).map((item) => {
                   const Icon = item.icon;
                   const isActive = currentScreen === item.id;
                   return (
@@ -371,19 +403,19 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
                       key={item.id}
                       id={`sidebar-nav-${item.id}`}
                       onClick={() => onNavigate(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         isActive
-                          ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30'
-                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
+                          ? 'bg-[#ff5500] text-white font-semibold shadow-xs shadow-orange-500/30'
+                          : 'text-zinc-300 hover:bg-[#1d2027] hover:text-white'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-zinc-400'}`} />
                         <span className="truncate">{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
-                          isActive ? 'bg-indigo-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                        <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+                          isActive ? 'bg-[#e04b00] text-white' : 'bg-[#1e2128] text-zinc-400 border border-[#2b2e38]'
                         }`}>
                           {item.badge}
                         </span>
@@ -395,67 +427,95 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
             </div>
           </div>
 
-          {/* Sidebar Footer: local control-plane status */}
-          <div className="p-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50 text-xs">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
+          {/* Sidebar Footer: Cluster Health Telemetry */}
+          <div className="p-2.5 border-t border-[#22252c] bg-[#101216] text-xs">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                 </span>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">PostgreSQL ready</span>
+                <span className="text-[10px] font-semibold text-zinc-300">Local workspace connected</span>
               </div>
-              <span className="text-[10px] font-mono text-slate-400">{activeJobs} active</span>
+              <span className="text-[9px] font-mono text-zinc-400">{snapshot.jobs.filter(job => ['PENDING', 'RUNNING'].includes(job.status)).length} active jobs</span>
             </div>
-            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mb-2">
-              <div className="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-full" />
+            {/* Progress bar */}
+            <div className="w-full bg-[#1e2129] h-1 rounded-full overflow-hidden mb-1.5">
+              <div className="bg-gradient-to-r from-emerald-500 to-[#ff5500] h-full w-full" />
             </div>
-            <div className="text-[10px] text-slate-400 flex items-center justify-between">
-              <span>Workspace: <strong className="text-slate-600 dark:text-slate-300 font-mono">default</strong></span>
-              <span className="font-mono">{snapshot.runs.length} runs</span>
+            <div className="text-[9px] text-zinc-400 flex items-center justify-between">
+              <span>Evaluator: <strong className="text-zinc-300 font-mono">{snapshot.models.find(model => model.roles.includes('JUDGE'))?.model || 'Not configured'}</strong></span>
+              <span className="font-mono">Database policy</span>
             </div>
+
+            {/* Engineer Profile Quick Card */}
+            {sidebarOpen && (
+              <div className="mt-2 pt-2 border-t border-[#1f2229] flex items-center justify-between">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-5 h-5 rounded bg-[#ff5500] text-white flex items-center justify-center font-bold text-[9px] shrink-0 font-mono">
+                    {user ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2) : 'MS'}
+                  </div>
+                  <div className="truncate">
+                    <div className="text-[10px] font-semibold text-zinc-200 truncate leading-tight">
+                      {user ? user.name : 'Mukesh Sakre'}
+                    </div>
+                    <div className="text-[8px] text-zinc-400 truncate">
+                      {user?.role}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => { void logout(); onNavigate('overview'); }}
+                  className="p-1 rounded hover:bg-[#1f2229] text-zinc-400 hover:text-zinc-200 transition-colors shrink-0"
+                  title="Sign out"
+                >
+                  <LogOut className="w-3 h-3" />
+                </button>
+              </div>
+            )}
           </div>
         </aside>
 
         {/* Main Content Shell */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-slate-50 dark:bg-[#07090E]">
+        <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-[#0d0f12]">
           {/* Breadcrumb & Screen Action Bar */}
-          <header className="bg-white/90 dark:bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-xs">
+          <header className="bg-[#131519]/90 backdrop-blur-md border-b border-[#22252c] px-4 py-2 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-10 shadow-xs">
             {/* Breadcrumb & Title */}
-            <div className="flex items-center gap-2 flex-wrap text-sm">
+            <div className="flex items-center gap-1.5 flex-wrap text-xs">
               {breadcrumbs.map((b, i) => (
                 <React.Fragment key={i}>
-                  {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-400" />}
+                  {i > 0 && <ChevronRight className="w-3 h-3 text-zinc-400" />}
                   {b.screen ? (
                     <button
                       onClick={() => onNavigate(b.screen!)}
-                      className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white font-medium transition-colors"
+                      className="text-zinc-400 hover:text-white font-medium transition-colors"
                     >
                       {b.label}
                     </button>
                   ) : (
-                    <span className="font-bold text-slate-900 dark:text-white">{b.label}</span>
+                    <span className="font-bold text-white font-mono">{b.label}</span>
                   )}
                 </React.Fragment>
               ))}
 
               {contextBadge && (
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80">
+                <span className="ml-1.5 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-mono font-semibold bg-[#1e2129] text-[#ff7733] border border-[#2e323e]">
                   {contextBadge}
                 </span>
               )}
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={handleRefresh}
-                className={`p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
-                  isRefreshing ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''
+                className={`p-1.5 rounded-lg border border-[#272a32] text-zinc-400 hover:text-white hover:bg-[#1f2229] transition-colors ${
+                  isRefreshing ? 'animate-spin text-[#ff5500]' : ''
                 }`}
                 title="Refresh benchmarks & evaluation traces"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-3.5 h-3.5" />
               </button>
 
               {secondaryAction && (
@@ -478,8 +538,8 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
             </div>
           </header>
 
-          {/* Screen Content Container (Target 1440px desktop with responsive margins) */}
-          <div className="flex-1 p-6 max-w-7xl w-full mx-auto animate-in fade-in duration-150">
+          {/* Screen Content Container (Dense compact desktop with high info density) */}
+          <div className="flex-1 p-3.5 sm:p-5 max-w-[1600px] w-full mx-auto animate-in fade-in duration-150">
             {children}
           </div>
         </main>
@@ -490,6 +550,17 @@ export const StreamlitShell: React.FC<StreamlitShellProps> = ({
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
         onNavigate={onNavigate}
+        onOpenCodeModal={() => {
+          setIsCommandPaletteOpen(false);
+          setIsCodeModalOpen(true);
+        }}
+      />
+
+      {/* Streamlit Python Source Code Modal */}
+      <StreamlitCodeModal
+        isOpen={isCodeModalOpen}
+        onClose={() => setIsCodeModalOpen(false)}
+        currentScreen={currentScreen}
       />
     </div>
   );

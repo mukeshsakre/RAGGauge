@@ -220,3 +220,7 @@ __marimo__/
 # RAGGauge demo reports
 comparison.html
 comparison.json
+.tmp/
+app/node_modules/
+app/test-results/
+app/playwright-report/

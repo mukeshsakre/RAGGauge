@@ -47,12 +47,12 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Models & Judge Rubrics</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <h1 className="text-base sm:text-lg font-bold font-mono text-white">Models & Judge Rubrics</h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
             Registered generative foundation models and calibrated Judge LLM evaluators with strict claim-level scoring rubrics.
           </p>
         </div>
@@ -75,18 +75,18 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
 
       {/* Tab 1: Primary LLMs */}
       {activeTab === 'Primary LLMs' && (
-        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs space-y-4">
-          <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-700">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] overflow-hidden shadow-xs space-y-4">
+          <div className="px-5 py-3.5 bg-[#191b22] border-b border-[#272a33] flex items-center justify-between">
+            <div className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Registered Primary Generators
             </div>
-            <span className="text-[11px] font-mono text-slate-500">Models available for pipeline generation</span>
+            <span className="text-[11px] font-mono text-zinc-400">Models available for pipeline generation</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse font-mono">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 text-[11px]">
+                <tr className="border-b border-[#272a33] text-zinc-400 text-[11px]">
                   <th className="py-2.5 px-4 font-sans">Provider</th>
                   <th className="py-2.5 px-3">Model ID</th>
                   <th className="py-2.5 px-3 text-right">Context Window</th>
@@ -95,14 +95,14 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
                   <th className="py-2.5 px-4 text-center font-sans">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#242730]">
                 {mockModels.map((m) => (
-                  <tr key={m.id} className="hover:bg-slate-50">
-                    <td className="py-3 px-4 font-sans font-semibold text-slate-800">{m.provider}</td>
-                    <td className="py-3 px-3 font-bold text-indigo-700">{m.id}</td>
-                    <td className="py-3 px-3 text-right text-slate-600">{(m.contextWindow || 128000).toLocaleString()} tok</td>
-                    <td className="py-3 px-3 text-right text-slate-700">{m.costInputPer1M == null ? 'Not recorded' : `$${m.costInputPer1M}`}</td>
-                    <td className="py-3 px-3 text-right text-slate-700">{m.costOutputPer1M == null ? 'Not recorded' : `$${m.costOutputPer1M}`}</td>
+                  <tr key={m.id} className="hover:bg-[#191b22]">
+                    <td className="py-3 px-4 font-sans font-semibold text-zinc-200">{m.provider}</td>
+                    <td className="py-3 px-3 font-bold text-[#ff7733]">{m.id}</td>
+                    <td className="py-3 px-3 text-right text-zinc-400">{(m.contextWindow || 128000).toLocaleString()} tok</td>
+                    <td className="py-3 px-3 text-right text-zinc-300">{m.costInputPer1M == null ? 'Not recorded' : `$${m.costInputPer1M}`}</td>
+                    <td className="py-3 px-3 text-right text-zinc-300">{m.costOutputPer1M == null ? 'Not recorded' : `$${m.costOutputPer1M}`}</td>
                     <td className="py-3 px-4 text-center font-sans">
                       <StBadge type="status" label={m.status} />
                     </td>
@@ -117,9 +117,9 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
       {/* Tab 2: Judge LLMs */}
       {activeTab === 'Judge LLMs' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-800">
+          <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#242730]">
+              <div className="text-xs font-bold uppercase tracking-wider text-zinc-200">
                 Calibrated Judge Evaluator Profiles
               </div>
               <span className="text-[11px] font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
@@ -127,18 +127,18 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
               </span>
             </div>
 
-            <div className="divide-y divide-slate-100 space-y-4">
+            <div className="divide-y divide-[#242730] space-y-4">
               {mockJudgeProfiles.map((j) => (
                 <div key={j.id} className="pt-4 first:pt-0 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <StBadge type="judge" label={j.name} />
-                      <span className="text-xs font-bold text-slate-900 font-mono">({j.model})</span>
+                      <span className="text-xs font-bold text-white font-mono">({j.model})</span>
                     </div>
-                    <span className="text-xs font-mono text-slate-500">Temp: {j.temperature}</span>
+                    <span className="text-xs font-mono text-zinc-400">Temp: {j.temperature}</span>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
                     {j.rubricDescription}
                   </p>
 
@@ -158,16 +158,16 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
 
       {/* Tab 3: Matrix */}
       {activeTab === 'Cost vs Capability Matrix' && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-4">
-          <h3 className="text-sm font-bold text-slate-900">Registered model accounting</h3>
-          <p className="text-xs text-slate-500">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-4">
+          <h3 className="text-sm font-bold text-white">Registered model accounting</h3>
+          <p className="text-xs text-zinc-400">
             Pricing is shown only when it was persisted with the model registration.
           </p>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold font-mono">
+                <tr className="bg-[#191b22] border-b border-[#272a33] text-zinc-400 font-semibold font-mono">
                   <th className="py-2.5 px-3 font-sans">Profile</th>
                   <th className="py-2.5 px-3">Model</th>
                   <th className="py-2.5 px-3">Input / 1M</th>
@@ -175,8 +175,8 @@ export const ModelsJudgesScreen: React.FC<ModelsJudgesScreenProps> = ({ onNaviga
                   <th className="py-2.5 px-3">Role</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-mono">
-                {mockModels.map(model => <tr key={model.id} className="hover:bg-slate-50"><td className="py-3 px-3 font-sans font-semibold text-slate-900">{model.name}</td><td className="py-3 px-3 text-indigo-700">{model.model}</td><td className="py-3 px-3">{model.costInputPer1M == null ? 'Not recorded' : `$${model.costInputPer1M}`}</td><td className="py-3 px-3">{model.costOutputPer1M == null ? 'Not recorded' : `$${model.costOutputPer1M}`}</td><td className="py-3 px-3 font-sans">{model.role}</td></tr>)}
+              <tbody className="divide-y divide-[#242730] font-mono">
+                {mockModels.map(model => <tr key={model.id} className="hover:bg-[#191b22]"><td className="py-3 px-3 font-sans font-semibold text-white">{model.name}</td><td className="py-3 px-3 text-[#ff7733]">{model.model}</td><td className="py-3 px-3">{model.costInputPer1M == null ? 'Not recorded' : `$${model.costInputPer1M}`}</td><td className="py-3 px-3">{model.costOutputPer1M == null ? 'Not recorded' : `$${model.costOutputPer1M}`}</td><td className="py-3 px-3 font-sans">{model.role}</td></tr>)}
               </tbody>
             </table>
           </div>

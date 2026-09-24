@@ -10,13 +10,13 @@
   
   body {
     font-family: var(--font-sans);
-    color: #0f172a;
-    background-color: #f8fafc;
+    color: #e4e4e7;
+    background-color: #0d0f12;
   }
 
   .dark body {
-    color: #f1f5f9;
-    background-color: #07090e;
+    color: #e4e4e7;
+    background-color: #0d0f12;
   }
 
   code, pre, .font-mono {
@@ -24,26 +24,35 @@
   }
 }
 
-/* Custom subtle scrollbar */
+/* Custom compact scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #2b2e38;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3f4452;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #2b2e38;
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #3f4452;
 }
 
+
+
+@layer base {
+  input, select, textarea { color-scheme: dark; color: #e4e4e7; background-color: #191b22; border-color: #272a33; }
+  input[type=checkbox] { accent-color: #ff5500; }
+  input:-webkit-autofill { -webkit-text-fill-color: #e4e4e7; box-shadow: 0 0 0 1000px #191b22 inset; }
+  th, td, article, section, header, button { border-color: #272a33; }
+  button:disabled { cursor: not-allowed; opacity: .5; }
+}

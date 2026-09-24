@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  Layers, 
-  Cpu, 
-  Workflow, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Database, 
-  Play, 
-  Save, 
-  Check, 
-  Sliders, 
-  Scale, 
+import {
+  ArrowRight,
+  ArrowLeft,
+  Layers,
+  Cpu,
+  Workflow,
+  CheckCircle2,
+  AlertTriangle,
+  Database,
+  Play,
+  Save,
+  Check,
+  Sliders,
+  Scale,
   Sparkles,
   Zap,
   Info,
@@ -29,14 +29,15 @@ interface NewExperimentScreenProps {
   onNavigate: (screen: ScreenId, params?: Record<string, any>) => void;
   initialMode?: ExperimentMode;
   initialDatasetId?: string;
+  initialAdapterId?: string;
 }
 
-export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({ 
+export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
   onNavigate,
   initialMode = 'pipeline',
-  initialDatasetId
+  initialDatasetId, initialAdapterId
 }) => {
-  const { refresh } = useRAGGauge();
+  const { snapshot, refresh } = useRAGGauge();
   const { showToast } = useToast();
   const [step, setStep] = useState(1);
   const [mode, setMode] = useState<ExperimentMode>(initialMode);
@@ -65,19 +66,20 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
   const [metrics, setMetrics] = useState({
     recall10: true,
     ndcg10: true,
-    faithfulness: true,
-    answerRelevance: true,
-    contextRecall: true,
+    faithfulness: Boolean(judgeLLM),
+    answerRelevance: Boolean(judgeLLM),
+    contextRecall: Boolean(judgeLLM),
     precision10: false
   });
 
   // Adapter state (Mode A)
-  const [selectedAdapterId, setSelectedAdapterId] = useState(mockAdapters[0]?.id || '');
+  const [selectedAdapterId, setSelectedAdapterId] = useState(initialAdapterId || mockAdapters[0]?.id || '');
   const [adapterTested, setAdapterTested] = useState(false);
 
   const dataset = mockDatasets.find(d => d.id === selectedDatasetId) || mockDatasets[0];
   const [saving, setSaving] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
+  const [savedDraft, setSavedDraft] = useState<{ key: string; id: string } | null>(null);
 
   const experimentPayload = () => {
     if (!dataset) throw new Error('Create a dataset before creating an experiment.');
@@ -86,7 +88,8 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
       faithfulness: 'faithfulness', answerRelevance: 'answer_relevance', contextRecall: 'context_recall',
     } as Record<string, string>)[name]);
     const judgeMetrics = new Set(['faithfulness', 'answer_relevance', 'context_recall']);
-    const usableMetrics = selectedMetrics.filter(metric => metric && (!judgeMetrics.has(metric) || judgeLLM));
+    if (!judgeLLM && selectedMetrics.some(metric => judgeMetrics.has(metric))) throw new Error('Select a registered judge or deselect judge-backed metrics.');
+    const usableMetrics = selectedMetrics;
     const configuration: Record<string, any> = {
       evaluation: { metrics: usableMetrics, quality_gates: {} },
       judge: { model_registration: judgeLLM || null },
@@ -110,7 +113,7 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
     }
     return {
       id: `experiment-${crypto.randomUUID()}`, name: experimentName.trim(), workspace_id: 'default',
-      dataset_version: dataset.id, corpus_version: null, configuration, status: 'DRAFT',
+      dataset_version: dataset.id, corpus_version: mode === 'pipeline' ? snapshot.datasets.find(item => item.id === dataset.id)?.corpus_version || null : null, configuration, status: 'DRAFT',
     };
   };
 
@@ -118,11 +121,14 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
     setSaving(true);
     setSubmissionError('');
     try {
-      const created = await createExperiment(experimentPayload());
-      const preflight = await preflightExperiment(created.id);
-      if (runNow) await startExperiment(created.id);
+      const payload = experimentPayload();
+      if (runNow && mode === 'pipeline' && !payload.corpus_version) throw new Error('A pipeline run requires a dataset linked to a CorpusVersion. You can save this draft or use an external adapter.');
+      const key = JSON.stringify({ ...payload, id: null });
+      const created = savedDraft?.key === key ? savedDraft : await createExperiment(payload);
+      setSavedDraft({ key, id: created.id });
+      if (runNow) { await preflightExperiment(created.id); await startExperiment(created.id); }
       await refresh();
-      showToast({ type: 'success', title: runNow ? 'Experiment queued' : 'Draft saved', message: `${preflight.cases} cases passed admission validation.` });
+      showToast({ type: 'success', title: runNow ? 'Experiment queued' : 'Draft saved', message: runNow ? 'Execution admitted under current database policy.' : 'Immutable experiment configuration saved.' });
       onNavigate(runNow ? 'experiment_running' : 'experiments', runNow ? { experimentId: created.id } : undefined);
     } catch (error) {
       setSubmissionError(error instanceof Error ? error.message : 'Experiment creation failed.');
@@ -136,17 +142,17 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-4">
       {/* Wizard Header */}
-      <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs">
+      <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-5 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">New Experiment Setup</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="text-lg font-bold text-white">New Experiment Setup</h1>
+            <p className="text-xs text-zinc-400 mt-0.5">
               Configure baseline or candidate RAG architectures for repeatable benchmarking.
             </p>
           </div>
-          <span className="text-xs font-mono font-semibold px-2.5 py-1 bg-slate-100 rounded text-slate-700">
+          <span className="text-xs font-mono font-semibold px-2.5 py-1 bg-[#1e2129] rounded text-zinc-300">
             Step {step} of 5
           </span>
         </div>
@@ -159,13 +165,13 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
             const isCurrent = step === stepNum;
             return (
               <div key={lbl} className="text-center">
-                <div 
+                <div
                   className={`h-1.5 rounded-full mb-1 transition-all ${
-                    isDone ? 'bg-emerald-500' : isCurrent ? 'bg-indigo-600' : 'bg-slate-200'
+                    isDone ? 'bg-emerald-500' : isCurrent ? 'bg-[#ff5500]' : 'bg-[#272a33]'
                   }`}
                 />
                 <span className={`text-[11px] block truncate font-medium ${
-                  isCurrent ? 'text-indigo-700 font-bold' : isDone ? 'text-emerald-700' : 'text-slate-400'
+                  isCurrent ? 'text-[#ff7733] font-bold' : isDone ? 'text-emerald-400' : 'text-zinc-500'
                 }`}>
                   {lbl}
                 </span>
@@ -177,25 +183,25 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
 
       {/* STEP 1 — Experiment Type */}
       {step === 1 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-6">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-4">
           <div className="text-center max-w-lg mx-auto mb-4">
-            <h2 className="text-base font-bold text-slate-900">What do you want to evaluate?</h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <h2 className="text-base font-bold text-white">What do you want to evaluate?</h2>
+            <p className="text-xs text-zinc-400 mt-1">
               Choose whether you are benchmarking an external production endpoint or testing component variants inside RAGGauge.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Mode A: Evaluate Existing RAG */}
-            <div 
+            <div
               onClick={() => {
                 setMode('adapter');
                 setExperimentName('Production API Evaluation');
               }}
               className={`p-5 rounded-lg border-2 text-left cursor-pointer transition-all flex flex-col justify-between ${
-                mode === 'adapter' 
-                  ? 'border-indigo-600 bg-indigo-50/20 shadow-xs' 
-                  : 'border-slate-200 bg-white hover:border-slate-300'
+                mode === 'adapter'
+                  ? 'border-indigo-600 bg-[#251e1b]/20 shadow-xs'
+                  : 'border-[#272a33] bg-[#15171e] hover:border-[#2e323e]'
               }`}
             >
               <div>
@@ -204,41 +210,41 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                     <Workflow className="w-5 h-5" />
                   </div>
                   {mode === 'adapter' && (
-                    <span className="text-xs font-bold text-indigo-600 flex items-center gap-1 font-mono">
+                    <span className="text-xs font-bold text-[#ff7733] flex items-center gap-1 font-mono">
                       <Check className="w-4 h-4 stroke-[3]" /> Selected
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-sm font-bold text-slate-900">Evaluate Existing RAG</h3>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                <h3 className="text-sm font-bold text-white">Evaluate Existing RAG</h3>
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   Connect RAGGauge to an existing RAG application or microservice endpoint and evaluate its responses against a controlled dataset.
                 </p>
 
                 {/* Architecture Diagram */}
-                <div className="mt-4 p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] font-mono text-slate-600 space-y-1">
-                  <div className="font-sans font-semibold text-slate-700 text-[10px] uppercase tracking-wider">Evaluation Flow:</div>
-                  <div className="text-slate-800 font-bold">Dataset → Your RAG Application → RAGGauge Evaluation</div>
+                <div className="mt-4 p-2.5 bg-[#191b22] border border-[#272a33] rounded text-[11px] font-mono text-zinc-400 space-y-1">
+                  <div className="font-sans font-semibold text-zinc-300 text-[10px] uppercase tracking-wider">Evaluation Flow:</div>
+                  <div className="text-zinc-200 font-bold">Dataset → Your RAG Application → RAGGauge Evaluation</div>
                 </div>
               </div>
 
               <div className="mt-5">
-                <span className="text-xs font-medium text-indigo-600">
+                <span className="text-xs font-medium text-[#ff7733]">
                   CTA: Use Existing RAG &rarr;
                 </span>
               </div>
             </div>
 
             {/* Mode B: Full Pipeline Lab */}
-            <div 
+            <div
               onClick={() => {
                 setMode('pipeline');
                 setExperimentName('Hybrid Retrieval + BGE Cross-Encoder');
               }}
               className={`p-5 rounded-lg border-2 text-left cursor-pointer transition-all flex flex-col justify-between ${
-                mode === 'pipeline' 
-                  ? 'border-indigo-600 bg-indigo-50/20 shadow-xs' 
-                  : 'border-slate-200 bg-white hover:border-slate-300'
+                mode === 'pipeline'
+                  ? 'border-indigo-600 bg-[#251e1b]/20 shadow-xs'
+                  : 'border-[#272a33] bg-[#15171e] hover:border-[#2e323e]'
               }`}
             >
               <div>
@@ -247,26 +253,26 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                     <Sliders className="w-5 h-5" />
                   </div>
                   {mode === 'pipeline' && (
-                    <span className="text-xs font-bold text-indigo-600 flex items-center gap-1 font-mono">
+                    <span className="text-xs font-bold text-[#ff7733] flex items-center gap-1 font-mono">
                       <Check className="w-4 h-4 stroke-[3]" /> Selected
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-sm font-bold text-slate-900">Full Pipeline Lab</h3>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                <h3 className="text-sm font-bold text-white">Full Pipeline Lab</h3>
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
                   Build and benchmark experimental RAG configurations directly in RAGGauge. Configure chunking, embeddings, hybrid retrieval weights, and rerankers.
                 </p>
 
                 {/* Architecture Diagram */}
-                <div className="mt-4 p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] font-mono text-slate-600 space-y-1">
-                  <div className="font-sans font-semibold text-slate-700 text-[10px] uppercase tracking-wider">Pipeline Flow:</div>
-                  <div className="text-slate-800 font-bold">Dataset → Chunking → Retrieval → Generation → Evaluation</div>
+                <div className="mt-4 p-2.5 bg-[#191b22] border border-[#272a33] rounded text-[11px] font-mono text-zinc-400 space-y-1">
+                  <div className="font-sans font-semibold text-zinc-300 text-[10px] uppercase tracking-wider">Pipeline Flow:</div>
+                  <div className="text-zinc-200 font-bold">Dataset → Chunking → Retrieval → Generation → Evaluation</div>
                 </div>
               </div>
 
               <div className="mt-5">
-                <span className="text-xs font-medium text-indigo-600">
+                <span className="text-xs font-medium text-[#ff7733]">
                   CTA: Configure Pipeline &rarr;
                 </span>
               </div>
@@ -277,21 +283,21 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
 
       {/* STEP 2 — Dataset Selection */}
       {step === 2 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Select Controlled Evaluation Dataset</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-sm font-bold text-white">Select Controlled Evaluation Dataset</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">
               All configurations will be evaluated against this exact frozen test suite.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Evaluation Dataset *</label>
+              <label className="block text-xs font-semibold text-zinc-300 mb-1">Evaluation Dataset *</label>
               <select
                 value={selectedDatasetId}
                 onChange={(e) => setSelectedDatasetId(e.target.value)}
-                className="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded font-medium focus:outline-indigo-500"
+                className="w-full text-xs p-2.5 bg-[#191b22] border border-[#2e323e] rounded font-medium focus:outline-[#ff5500]"
               >
                 {mockDatasets.map(d => (
                   <option key={d.id} value={d.id}>{d.name} ({d.currentVersion})</option>
@@ -300,36 +306,36 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Target Version</label>
+              <label className="block text-xs font-semibold text-zinc-300 mb-1">Target Version</label>
               <input
                 type="text"
                 disabled
                 value={`${dataset.currentVersion} (Immutable, ${dataset.casesCount} cases)`}
-                className="w-full text-xs p-2.5 bg-slate-100 border border-slate-200 rounded font-mono text-slate-600"
+                className="w-full text-xs p-2.5 bg-[#1e2129] border border-[#272a33] rounded font-mono text-zinc-400"
               />
             </div>
           </div>
 
           {/* Dataset metadata inspector */}
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-3">
+          <div className="p-4 bg-[#191b22] rounded-lg border border-[#272a33] text-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-slate-800">{dataset.name}</span>
+              <span className="font-semibold text-zinc-200">{dataset.name}</span>
               <StBadge type="status" label="Schema Valid" />
             </div>
-            <p className="text-slate-600">{dataset.description}</p>
+            <p className="text-zinc-400">{dataset.description}</p>
 
-            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-200 font-mono">
+            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-[#272a33] font-mono">
               <div>
-                <div className="text-[10px] text-slate-500">CASES</div>
-                <div className="text-sm font-bold text-slate-800">{dataset.casesCount}</div>
+                <div className="text-[10px] text-zinc-400">CASES</div>
+                <div className="text-sm font-bold text-zinc-200">{dataset.casesCount}</div>
               </div>
               <div>
-                <div className="text-[10px] text-slate-500">DIFFICULTY DIST</div>
-                <div className="text-xs text-slate-700">30% E / 45% M / 25% H</div>
+                <div className="text-[10px] text-zinc-400">DIFFICULTY DIST</div>
+                <div className="text-xs text-zinc-300">30% E / 45% M / 25% H</div>
               </div>
               <div>
-                <div className="text-[10px] text-slate-500">CATEGORIES</div>
-                <div className="text-xs text-slate-700">{dataset.categories.length} clusters</div>
+                <div className="text-[10px] text-zinc-400">CATEGORIES</div>
+                <div className="text-xs text-zinc-300">{dataset.categories.length} clusters</div>
               </div>
             </div>
           </div>
@@ -338,20 +344,20 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
 
       {/* STEP 3A — Existing RAG Adapter Configuration */}
       {step === 3 && mode === 'adapter' && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Configure RAG Adapter Connection</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-sm font-bold text-white">Configure RAG Adapter Connection</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">
               Select the registered adapter endpoint for your external RAG application.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Select Adapter</label>
+            <label className="block text-xs font-semibold text-zinc-300 mb-1">Select Adapter</label>
             <select
               value={selectedAdapterId}
               onChange={(e) => setSelectedAdapterId(e.target.value)}
-              className="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded font-medium"
+              className="w-full text-xs p-2.5 bg-[#191b22] border border-[#2e323e] rounded font-medium"
             >
               {mockAdapters.map(adp => (
                 <option key={adp.id} value={adp.id}>
@@ -362,24 +368,24 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
           </div>
 
           {/* Adapter health & test */}
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-3">
+          <div className="p-4 bg-[#191b22] rounded-lg border border-[#272a33] text-xs space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-semibold text-slate-800">Connection & Health Status</div>
-                <div className="text-slate-500 text-[11px] font-mono">https://rag-gateway.internal.corp/api/v2/query</div>
+                <div className="font-semibold text-zinc-200">Connection & Health Status</div>
+                <div className="text-zinc-400 text-[11px] font-mono">{mockAdapters.find(item => item.id === selectedAdapterId)?.endpoint || 'No adapter registered'}</div>
               </div>
               <StButton
-                label={adapterTested ? "✓ Verified Healthy (142ms)" : "Run Connection Test"}
+                label="Registered adapter; runtime health not probed" disabled
                 variant={adapterTested ? "secondary" : "primary"}
                 size="sm"
                 onClick={() => setAdapterTested(true)}
               />
             </div>
 
-            <div className="pt-2 border-t border-slate-200">
-              <div className="font-semibold text-slate-700 mb-1">Expected Adapter Response Schema:</div>
+            <div className="pt-2 border-t border-[#272a33]">
+              <div className="font-semibold text-zinc-300 mb-1">Expected Adapter Response Schema:</div>
               <StCodeBlock
-                code={`{\n  "answer": "string (required)",\n  "retrieved_contexts": ["string (required)"],\n  "scores": [0.91, 0.82],\n  "latency_metadata": { "retrieval_ms": 120, "generation_ms": 780 }\n}`}
+                code={JSON.stringify({case_execution_id: "execution-id", question: "Question", stages: {}, generated_answer: "Optional answer"}, null, 2)}
                 language="json"
               />
             </div>
@@ -392,21 +398,21 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left 2 Cols: Component Config */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-4">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+            <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-5 shadow-xs space-y-4">
+              <h2 className="text-sm font-bold text-white flex items-center justify-between">
                 <span>RAG Pipeline Architecture</span>
-                <span className="text-xs font-mono font-normal text-slate-500">Progressive Disclosure</span>
+                <span className="text-xs font-mono font-normal text-zinc-400">Progressive Disclosure</span>
               </h2>
 
               {/* Chunking Block */}
               <StExpander title="1. Chunking Strategy" defaultExpanded={true}>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Strategy</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Strategy</label>
                     <select
                       value={chunkStrategy}
                       onChange={(e) => setChunkStrategy(e.target.value as any)}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-medium"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-medium"
                     >
                       <option value="Recursive">Recursive Character</option>
                       <option value="Fixed">Fixed Size</option>
@@ -415,30 +421,30 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Chunk Size (chars / tokens)</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Chunk Size (chars / tokens)</label>
                     <input
                       type="number"
                       value={chunkSize}
                       onChange={(e) => setChunkSize(Number(e.target.value))}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Chunk Overlap</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Chunk Overlap</label>
                     <input
                       type="number"
                       value={chunkOverlap}
                       onChange={(e) => setChunkOverlap(Number(e.target.value))}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Separators</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Separators</label>
                     <input
                       type="text"
                       disabled
                       value="['\n\n', '\n', ' ', '']"
-                      className="w-full text-xs p-2 bg-slate-100 border border-slate-200 rounded font-mono text-slate-500"
+                      className="w-full text-xs p-2 bg-[#1e2129] border border-[#272a33] rounded font-mono text-zinc-400"
                     />
                   </div>
                 </div>
@@ -449,11 +455,11 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Retriever Strategy</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">Retriever Strategy</label>
                       <select
                         value={retrieverStrategy}
                         onChange={(e) => setRetrieverStrategy(e.target.value as any)}
-                        className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-medium"
+                        className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-medium"
                       >
                         <option value="Dense">Dense Embeddings Only</option>
                         <option value="BM25">Sparse BM25 Only</option>
@@ -461,33 +467,17 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Top K Candidates</label>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1">Top K Candidates</label>
                       <input
                         type="number"
                         value={topK}
                         onChange={(e) => setTopK(Number(e.target.value))}
-                        className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                        className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                       />
                     </div>
                   </div>
 
-                  {retrieverStrategy === 'Hybrid' && (
-                    <div className="p-3 bg-slate-50 rounded border border-slate-200 text-xs">
-                      <div className="flex justify-between text-slate-700 font-medium mb-1">
-                        <span>Dense Weight: <span className="font-mono">{denseWeight.toFixed(2)}</span></span>
-                        <span>Sparse Weight: <span className="font-mono">{(1 - denseWeight).toFixed(2)}</span></span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.05"
-                        value={denseWeight}
-                        onChange={(e) => setDenseWeight(Number(e.target.value))}
-                        className="w-full accent-indigo-600"
-                      />
-                    </div>
-                  )}
+                  {retrieverStrategy === 'Hybrid' && <p className="text-xs text-zinc-400">Reciprocal rank fusion (RRF), k=60. Dense and BM25 candidate K are both {topK}; final K is {topK}.</p>}
                 </div>
               </StExpander>
 
@@ -500,9 +490,9 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                       id="rerank-toggle"
                       checked={rerankEnabled}
                       onChange={(e) => setRerankEnabled(e.target.checked)}
-                      className="rounded text-indigo-600 focus:ring-0"
+                      className="rounded text-[#ff7733] focus:ring-0"
                     />
-                    <label htmlFor="rerank-toggle" className="text-xs font-semibold text-slate-800">
+                    <label htmlFor="rerank-toggle" className="text-xs font-semibold text-zinc-200">
                       Enable Reranker Stage
                     </label>
                   </div>
@@ -510,21 +500,21 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
                   {rerankEnabled && (
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Reranker Model</label>
+                        <label className="block text-xs font-semibold text-zinc-300 mb-1">Reranker Model</label>
                         <select
                           value={rerankModel}
                           onChange={(e) => setRerankModel(e.target.value)}
-                          className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                          className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                         >
                           <option value="cross-encoder/ms-marco-MiniLM-L6-v2">MS MARCO MiniLM cross-encoder</option>
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Return Count to LLM</label>
+                        <label className="block text-xs font-semibold text-zinc-300 mb-1">Return Count to LLM</label>
                         <input
                           type="number"
                           defaultValue={5}
-                          className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                          className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                         />
                       </div>
                     </div>
@@ -536,43 +526,43 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
               <StExpander title="4. Generation & Primary LLM" defaultExpanded={true}>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Primary LLM Generator</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Primary LLM Generator</label>
                     <select
                       value={primaryLLM}
                       onChange={(e) => setPrimaryLLM(e.target.value)}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     >
                       <option value="">Retrieval-only (no generator)</option>
                       {mockModels.filter(model => model.role.includes('Generator')).map(model => <option key={model.id} value={model.id}>{model.name}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Prompt Template</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Prompt Template</label>
                     <select
                       value={promptVersion}
                       onChange={(e) => setPromptVersion(e.target.value)}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     >
                       <option value="sys_prompt_support_v5">sys_prompt_support_v5 (Strict Grounding)</option>
                       <option value="sys_prompt_support_v4">sys_prompt_support_v4 (Concise Baseline)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Temperature</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Temperature</label>
                     <input
                       type="number"
                       step="0.05"
                       value={temperature}
                       onChange={(e) => setTemperature(Number(e.target.value))}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Seed</label>
+                    <label className="block text-xs font-semibold text-zinc-300 mb-1">Seed</label>
                     <input
                       type="number"
                       defaultValue={42}
-                      className="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-mono"
+                      className="w-full text-xs p-2 bg-[#191b22] border border-[#2e323e] rounded font-mono"
                     />
                   </div>
                 </div>
@@ -581,41 +571,41 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
           </div>
 
           {/* Right Col: Live Pipeline Summary */}
-          <div className="bg-slate-900 text-white rounded-lg p-5 shadow-2xs space-y-4 font-mono text-xs border border-slate-800 self-start sticky top-20">
+          <div className="bg-[#15171e] text-white rounded-lg p-5 shadow-xs space-y-4 font-mono text-xs border border-slate-800 self-start sticky top-20">
             <div className="font-bold text-indigo-400 pb-2 border-b border-slate-800 flex items-center justify-between">
               <span>LIVE PIPELINE SUMMARY</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
             </div>
 
             <div className="space-y-2 text-slate-300 text-[11px]">
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">DOCUMENTS</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">DOCUMENTS</div>
                 <div className="text-white font-bold">{dataset.name}</div>
               </div>
-              <div className="text-center text-slate-500">↓</div>
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">CHUNKING</div>
+              <div className="text-center text-zinc-400">↓</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">CHUNKING</div>
                 <div>{chunkStrategy} ({chunkSize}/{chunkOverlap})</div>
               </div>
-              <div className="text-center text-slate-500">↓</div>
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">EMBEDDINGS</div>
+              <div className="text-center text-zinc-400">↓</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">EMBEDDINGS</div>
                 <div>{embedModel}</div>
               </div>
-              <div className="text-center text-slate-500">↓</div>
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">RETRIEVAL</div>
+              <div className="text-center text-zinc-400">↓</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">RETRIEVAL</div>
                 <div>{retrieverStrategy} (k={topK})</div>
               </div>
-              <div className="text-center text-slate-500">↓</div>
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">RERANKER</div>
+              <div className="text-center text-zinc-400">↓</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">RERANKER</div>
                 <div>{rerankEnabled ? rerankModel : 'Disabled'}</div>
               </div>
-              <div className="text-center text-slate-500">↓</div>
-              <div className="p-2 bg-slate-800/80 rounded border border-slate-700">
-                <div className="text-slate-400 text-[10px]">GENERATOR</div>
-                <div className="text-indigo-300 font-bold">{primaryLLM}</div>
+              <div className="text-center text-zinc-400">↓</div>
+              <div className="p-2 bg-[#191b22]/80 rounded border border-[#272a33]">
+                <div className="text-zinc-500 text-[10px]">GENERATOR</div>
+                <div className="text-[#ff9966] font-bold">{primaryLLM}</div>
               </div>
             </div>
           </div>
@@ -624,34 +614,34 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
 
       {/* STEP 4 — Evaluation & Judge LLM */}
       {step === 4 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-6">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Evaluation Metrics & Judge LLM</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-sm font-bold text-white">Evaluation Metrics & Judge LLM</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">
               Select retrieval precision and answer factual grounding metrics to score each case.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Retrieval Metrics */}
-            <div className="border border-slate-200 rounded-lg p-4 space-y-3">
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Retrieval Metrics</h3>
+            <div className="border border-[#272a33] rounded-lg p-4 space-y-3">
+              <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-wider">Retrieval Metrics</h3>
               <div className="space-y-2 text-xs">
                 {[
                   { key: 'recall10', label: 'Recall@10', desc: 'Proportion of expected document chunks retrieved in top 10' },
                   { key: 'ndcg10', label: 'NDCG@10', desc: 'Normalized discounted cumulative gain measuring rank order' },
                   { key: 'precision10', label: 'Precision@10', desc: 'Fraction of retrieved chunks that are golden citations' }
                 ].map(m => (
-                  <label key={m.key} className="flex items-start gap-2.5 p-2 rounded hover:bg-slate-50 cursor-pointer">
+                  <label key={m.key} className="flex items-start gap-2.5 p-2 rounded hover:bg-[#191b22] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={(metrics as any)[m.key]}
                       onChange={(e) => setMetrics({ ...metrics, [m.key]: e.target.checked })}
-                      className="rounded text-indigo-600 focus:ring-0 mt-0.5"
+                      className="rounded text-[#ff7733] focus:ring-0 mt-0.5"
                     />
                     <div>
-                      <div className="font-semibold text-slate-800">{m.label}</div>
-                      <div className="text-slate-500 text-[11px]">{m.desc}</div>
+                      <div className="font-semibold text-zinc-200">{m.label}</div>
+                      <div className="text-zinc-400 text-[11px]">{m.desc}</div>
                     </div>
                   </label>
                 ))}
@@ -659,24 +649,24 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
             </div>
 
             {/* Generation & Factual Grounding Metrics */}
-            <div className="border border-slate-200 rounded-lg p-4 space-y-3">
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Answer Quality Metrics</h3>
+            <div className="border border-[#272a33] rounded-lg p-4 space-y-3">
+              <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-wider">Answer Quality Metrics</h3>
               <div className="space-y-2 text-xs">
                 {[
                   { key: 'faithfulness', label: 'Faithfulness (Judge LLM)', desc: 'Claim-level verification against retrieved passages' },
                   { key: 'answerRelevance', label: 'Answer Relevance (Judge LLM)', desc: 'Directness of answer addressing the user question' },
                   { key: 'contextRecall', label: 'Context Recall', desc: 'Whether retrieved context covers the golden ground-truth' }
                 ].map(m => (
-                  <label key={m.key} className="flex items-start gap-2.5 p-2 rounded hover:bg-slate-50 cursor-pointer">
+                  <label key={m.key} className="flex items-start gap-2.5 p-2 rounded hover:bg-[#191b22] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={(metrics as any)[m.key]}
                       onChange={(e) => setMetrics({ ...metrics, [m.key]: e.target.checked })}
-                      className="rounded text-indigo-600 focus:ring-0 mt-0.5"
+                      className="rounded text-[#ff7733] focus:ring-0 mt-0.5"
                     />
                     <div>
-                      <div className="font-semibold text-slate-800">{m.label}</div>
-                      <div className="text-slate-500 text-[11px]">{m.desc}</div>
+                      <div className="font-semibold text-zinc-200">{m.label}</div>
+                      <div className="text-zinc-400 text-[11px]">{m.desc}</div>
                     </div>
                   </label>
                 ))}
@@ -685,28 +675,28 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
           </div>
 
           {/* Distinct Model Badges: Primary Generator vs Judge LLM */}
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3">
-            <h3 className="text-xs font-bold text-slate-800">Evaluator & Judge Profiles</h3>
+          <div className="p-4 bg-[#191b22] rounded-lg border border-[#272a33] space-y-3">
+            <h3 className="text-xs font-bold text-zinc-200">Evaluator & Judge Profiles</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3 bg-white rounded border border-slate-200">
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Primary Generator</span>
+              <div className="p-3 bg-[#15171e] rounded border border-[#272a33]">
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase block">Primary Generator</span>
                 <div className="mt-1 flex items-center gap-2">
                   <StBadge type="model" label={primaryLLM} />
-                  <span className="text-slate-500 text-[11px]">(Answers queries)</span>
+                  <span className="text-zinc-400 text-[11px]">(Answers queries)</span>
                 </div>
               </div>
 
-              <div className="p-3 bg-white rounded border border-purple-200">
+              <div className="p-3 bg-[#15171e] rounded border border-purple-200">
                 <span className="text-[10px] text-purple-600 font-semibold uppercase block">Evaluation Judge Model</span>
                 <div className="mt-1 flex items-center gap-2">
-                  <StBadge type="judge" label={judgeLLM} />
-                  <span className="text-slate-500 text-[11px]">(Strict reasoning judge)</span>
+                  <select aria-label="Judge model" value={judgeLLM} onChange={event => setJudgeLLM(event.target.value)} className="p-2 rounded border bg-[#191b22] text-xs"><option value="">No judge</option>{mockModels.filter(model => model.role.includes('Judge')).map(model => <option key={model.id} value={model.id}>{model.name}</option>)}</select>
+                  <span className="text-zinc-400 text-[11px]">(Strict reasoning judge)</span>
                 </div>
               </div>
             </div>
 
-            <div className="text-slate-500 text-xs font-mono pt-1">
-              Estimated Judge API calls: <strong className="text-slate-800">{dataset.casesCount * 2} calls</strong> (Faithfulness + Relevance)
+            <div className="text-zinc-400 text-xs font-mono pt-1">
+              Estimated Judge API calls: <strong className="text-zinc-200">{dataset.casesCount * 2} calls</strong> (Faithfulness + Relevance)
             </div>
           </div>
         </div>
@@ -714,72 +704,72 @@ export const NewExperimentScreen: React.FC<NewExperimentScreenProps> = ({
 
       {/* STEP 5 — Review & Run (NOT Preflight!) */}
       {step === 5 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs space-y-6">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="bg-[#15171e] rounded-lg border border-[#272a33] p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#242730]">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Review & Run</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-base font-bold text-white">Review & Run</h2>
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Verify experiment settings and pre-run system readiness before execution.
               </p>
             </div>
-            <StBadge type="status" label="Ready to Execute" />
+            <StBadge type="status" label="Awaiting preflight" />
           </div>
 
           {/* Configuration Summary Table */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-400 text-[10px]">EXPERIMENT MODE</div>
-              <div className="font-bold text-slate-800 mt-0.5 uppercase font-mono">{mode}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-500 text-[10px]">EXPERIMENT MODE</div>
+              <div className="font-bold text-zinc-200 mt-0.5 uppercase font-mono">{mode}</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-400 text-[10px]">DATASET</div>
-              <div className="font-bold text-slate-800 mt-0.5 font-mono">{dataset.name} ({dataset.currentVersion})</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-500 text-[10px]">DATASET</div>
+              <div className="font-bold text-zinc-200 mt-0.5 font-mono">{dataset.name} ({dataset.currentVersion})</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-400 text-[10px]">PRIMARY LLM</div>
-              <div className="font-bold text-indigo-700 mt-0.5 font-mono truncate">{primaryLLM}</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-500 text-[10px]">PRIMARY LLM</div>
+              <div className="font-bold text-[#ff7733] mt-0.5 font-mono truncate">{primaryLLM}</div>
             </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <div className="text-slate-400 text-[10px]">JUDGE LLM</div>
+            <div className="p-3 bg-[#191b22] rounded border border-[#272a33]">
+              <div className="text-zinc-500 text-[10px]">JUDGE LLM</div>
               <div className="font-bold text-purple-700 mt-0.5 font-mono truncate">{judgeLLM}</div>
             </div>
           </div>
 
           {/* Pre-Run Checks Section */}
           <div className="space-y-2">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Pre-Run Checks</h3>
-            <div className="border border-slate-200 rounded-lg p-3.5 divide-y divide-slate-100 text-xs">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Pre-Run Checks</h3>
+            <div className="border border-[#272a33] rounded-lg p-3.5 divide-y divide-[#242730] text-xs">
               <div className="py-1.5 flex items-center justify-between">
-                <span className="text-slate-700">Dataset integrity and golden ground truth present</span>
-                <span className="text-slate-700 font-medium font-mono">{dataset.casesCount} persisted cases</span>
+                <span className="text-zinc-300">Dataset integrity and golden ground truth present</span>
+                <span className="text-zinc-300 font-medium font-mono">{dataset.casesCount} persisted cases</span>
               </div>
               <div className="py-1.5 flex items-center justify-between">
-                <span className="text-slate-700">Provider API credentials and rate limits</span>
-                <span className="text-slate-700 font-medium font-mono">Validated when the run is admitted</span>
+                <span className="text-zinc-300">Provider API credentials and rate limits</span>
+                <span className="text-zinc-300 font-medium font-mono">Resolved at execution; provider health not probed</span>
               </div>
               <div className="py-1.5 flex items-center justify-between">
-                <span className="text-slate-700">Judge model connection and schema validator</span>
-                <span className="text-slate-700 font-medium font-mono">{judgeLLM || 'No judge selected'}</span>
+                <span className="text-zinc-300">Judge model connection and schema validator</span>
+                <span className="text-zinc-300 font-medium font-mono">{judgeLLM || 'No judge selected'}</span>
               </div>
               <div className="py-1.5 flex items-center justify-between">
-                <span className="text-slate-700">Estimated Judge LLM execution load</span>
-                <span className="text-amber-700 font-medium font-mono">Eligibility calculated by persisted preflight</span>
+                <span className="text-zinc-300">Estimated Judge LLM execution load</span>
+                <span className="text-amber-400 font-medium font-mono">Eligibility calculated by persisted preflight</span>
               </div>
             </div>
           </div>
 
           {/* Collapsible Full YAML Config */}
-          <StExpander title="Inspect Complete Experiment YAML Specification">
+          <StExpander title="Inspect experiment selections (JSON)">
             <StCodeBlock
-              code={`experiment:\n  name: "${experimentName}"\n  mode: "${mode}"\n  dataset: "${dataset.id}"\n  version: "${dataset.currentVersion}"\n  retrieval:\n    strategy: "${retrieverStrategy}"\n    top_k: ${topK}\n    dense_weight: ${denseWeight}\n  reranking:\n    enabled: ${rerankEnabled}\n    model: "${rerankModel}"\n  generation:\n    model: "${primaryLLM}"\n    temperature: ${temperature}\n  evaluation:\n    judge: "${judgeLLM}"\n    metrics: ["Recall@10", "NDCG@10", "Faithfulness", "Answer Relevance"]`}
-              language="yaml"
-              title="experiment_config.yaml"
+              code={JSON.stringify({ mode, dataset_version: dataset.id, retrieval: { strategy: retrieverStrategy, candidate_k: topK, fusion: { algorithm: "rrf", rrf_k: 60 } }, generation: { model_registration: primaryLLM || null }, judge: { model_registration: judgeLLM || null }, metrics }, null, 2)}
+              language="json"
+              title="ExperimentConfiguration.json"
             />
           </StExpander>
 
           {submissionError && <StAlert type="error">{submissionError}</StAlert>}
           {/* Run Actions */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+          <div className="pt-4 border-t border-[#272a33] flex items-center justify-between">
             <StButton
               label={saving ? "Saving…" : "Save as Draft"}
               icon={<Save className="w-4 h-4" />}

@@ -3,10 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StreamlitShell } from './components/layout/StreamlitShell';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { DataProvider } from './context/DataContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginScreen } from './screens/LoginScreen';
 import { OverviewScreen } from './screens/OverviewScreen';
 import { DatasetsScreen } from './screens/DatasetsScreen';
 import { DatasetDetailScreen } from './screens/DatasetDetailScreen';
@@ -23,56 +26,13 @@ import { PipelineLabScreen } from './screens/PipelineLabScreen';
 import { AdaptersScreen } from './screens/AdaptersScreen';
 import { ModelsJudgesScreen } from './screens/ModelsJudgesScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
-import { ScreenId } from './types';
-import { ApiError, clearToken, getToken, loadWorkspace, login, logout, type WorkspaceSnapshot } from './api';
-import { DataProvider } from './context/DataContext';
-import { LoginScreen } from './components/auth/LoginScreen';
-import { hydrateWorkspaceData } from './mockData';
 
-export default function App() {
+import { ScreenId } from './types';
+
+function AppContent() {
+  const { snapshot, loading, error, refresh, logout } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('overview');
   const [navParams, setNavParams] = useState<Record<string, any>>({});
-  const [snapshot, setSnapshot] = useState<WorkspaceSnapshot | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [sessionMessage, setSessionMessage] = useState('');
-
-  const refresh = useCallback(async () => {
-    const next = await loadWorkspace();
-    hydrateWorkspaceData(next);
-    setSnapshot(next);
-  }, []);
-
-  useEffect(() => {
-    if (!getToken()) {
-      setLoading(false);
-      return;
-    }
-    refresh()
-      .catch((error) => {
-        if (error instanceof ApiError && [401, 403].includes(error.status)) {
-          clearToken();
-          setSessionMessage('Your session expired. Sign in again.');
-        } else {
-          setSessionMessage(error instanceof Error ? error.message : 'Unable to load the workspace.');
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [refresh]);
-
-  const handleLogin = async (username: string, password: string) => {
-    await login(username, password);
-    const next = await loadWorkspace();
-    hydrateWorkspaceData(next);
-    setSnapshot(next);
-    setSessionMessage('');
-  };
-
-  const handleSignOut = async () => {
-    await logout();
-    setSnapshot(null);
-    setCurrentScreen('overview');
-    setNavParams({});
-  };
 
   const handleNavigate = (screen: ScreenId, params: Record<string, any> = {}) => {
     setNavParams(params);
@@ -81,7 +41,12 @@ export default function App() {
   };
 
   const renderScreen = () => {
+    if (snapshot?.user.role === 'VIEWER' && ['create_dataset', 'new_experiment', 'pipeline_lab'].includes(currentScreen)) {
+      return <p role="status" className="p-6 text-zinc-300">VIEWER access is read-only. An ENGINEER or ADMIN can create datasets and experiments.</p>;
+    }
     switch (currentScreen) {
+      case 'login':
+        return <LoginScreen onNavigate={handleNavigate} />;
       case 'overview':
         return <OverviewScreen onNavigate={handleNavigate} />;
       case 'datasets':
@@ -93,7 +58,7 @@ export default function App() {
       case 'experiments':
         return <ExperimentsScreen onNavigate={handleNavigate} />;
       case 'new_experiment':
-        return <NewExperimentScreen onNavigate={handleNavigate} initialMode={navParams.mode} initialDatasetId={navParams.datasetId} />;
+        return <NewExperimentScreen onNavigate={handleNavigate} initialMode={navParams.mode} initialDatasetId={navParams.datasetId} initialAdapterId={navParams.adapterId} />;
       case 'experiment_running':
         return <ExperimentRunningScreen onNavigate={handleNavigate} experimentId={navParams.experimentId} />;
       case 'experiment_details':
@@ -124,37 +89,24 @@ export default function App() {
         return <AdaptersScreen onNavigate={handleNavigate} />;
       case 'models_judges':
         return <ModelsJudgesScreen onNavigate={handleNavigate} />;
+      case 'configuration':
       case 'settings':
         return <SettingsScreen onNavigate={handleNavigate} />;
-      case 'configuration':
-        return <SettingsScreen onNavigate={handleNavigate} />;
+
       default:
         return <OverviewScreen onNavigate={handleNavigate} />;
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#07090E] text-slate-300 grid place-items-center">
-        <div className="flex items-center gap-3 text-sm font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-          Connecting to the local control plane…
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen grid place-items-center text-zinc-300">Connecting to the local API…</div>;
+  if (!snapshot) return <LoginScreen onNavigate={handleNavigate} initialError={error} />;
+  return <DataProvider value={{ snapshot, refresh, signOut: logout }}>
+    <StreamlitShell currentScreen={currentScreen} onNavigate={handleNavigate}>
+      <div key={currentScreen + JSON.stringify(navParams)}>{renderScreen()}</div>
+    </StreamlitShell>
+  </DataProvider>;
+}
 
-  if (!snapshot) return <LoginScreen onLogin={handleLogin} initialError={sessionMessage} />;
-
-  return (
-    <ThemeProvider>
-      <ToastProvider>
-        <DataProvider value={{ snapshot, refresh, signOut: handleSignOut }}>
-          <StreamlitShell currentScreen={currentScreen} onNavigate={handleNavigate}>
-            {renderScreen()}
-          </StreamlitShell>
-        </DataProvider>
-      </ToastProvider>
-    </ThemeProvider>
-  );
+export default function App() {
+  return <ThemeProvider><ToastProvider><AuthProvider><AppContent /></AuthProvider></ToastProvider></ThemeProvider>;
 }

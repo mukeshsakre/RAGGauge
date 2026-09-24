@@ -45,15 +45,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const icons = {
             success: <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />,
             error: <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />,
-            info: <Info className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />,
+            info: <Info className="w-4 h-4 text-[#ff7733] shrink-0 mt-0.5" />,
             warning: <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           };
 
           const borders = {
-            success: 'border-emerald-500/30 bg-slate-900/95 text-slate-100 shadow-lg shadow-emerald-950/20',
-            error: 'border-rose-500/30 bg-slate-900/95 text-slate-100 shadow-lg shadow-rose-950/20',
-            info: 'border-sky-500/30 bg-slate-900/95 text-slate-100 shadow-lg shadow-sky-950/20',
-            warning: 'border-amber-500/30 bg-slate-900/95 text-slate-100 shadow-lg shadow-amber-950/20'
+            success: 'border-emerald-500/30 bg-[#15171e]/95 text-zinc-100 shadow-xl shadow-black/50',
+            error: 'border-rose-500/30 bg-[#15171e]/95 text-zinc-100 shadow-xl shadow-black/50',
+            info: 'border-[#ff5500]/30 bg-[#15171e]/95 text-zinc-100 shadow-xl shadow-black/50',
+            warning: 'border-amber-500/30 bg-[#15171e]/95 text-zinc-100 shadow-xl shadow-black/50'
           };
 
           return (
@@ -65,12 +65,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-white">{toast.title}</p>
                 {toast.message && (
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{toast.message}</p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5 leading-relaxed">{toast.message}</p>
                 )}
               </div>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="text-slate-400 hover:text-white transition-colors shrink-0 p-0.5 rounded"
+                className="text-zinc-400 hover:text-white transition-colors shrink-0 p-0.5 rounded cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>

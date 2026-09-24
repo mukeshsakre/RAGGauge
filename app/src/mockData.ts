@@ -15,17 +15,25 @@ const percentile = (values: number[], quantile: number) => {
   const ordered = [...values].sort((a, b) => a - b);
   return ordered[Math.min(ordered.length - 1, Math.ceil(quantile * ordered.length) - 1)];
 };
-const metricValues = (run: any, names: string[]) => (run.cases || []).flatMap((item: any) => item.metrics || []).filter((item: any) => item.status === 'SUCCESS' && names.includes(item.name)).map((item: any) => Number(item.score)).filter(Number.isFinite);
+const numeric = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? value : Number.NaN;
+const metricValues = (run: any, names: string[]) => {
+  const results = (run.cases || []).flatMap((item: any) => item.metrics || []).filter((item: any) => item.status === 'SUCCESS' && names.includes(item.name));
+  // A dashboard score represents one stage/evaluator, never an average across stages.
+  const stages = ['RERANKED_RETRIEVAL', 'FUSED_RETRIEVAL', 'DENSE_RETRIEVAL', 'LEXICAL_RETRIEVAL'];
+  const stage = stages.find(value => results.some((item: any) => item.stage === value)) || results[0]?.stage;
+  const evaluator = results.find((item: any) => item.stage === stage)?.evaluator_id;
+  return results.filter((item: any) => item.stage === stage && item.evaluator_id === evaluator).map((item: any) => numeric(item.score)).filter(Number.isFinite);
+};
 const metricMean = (run: any, ...names: string[]) => mean(metricValues(run, names));
 const titleCase = (value: unknown) => String(value || '').toLowerCase().replace(/(^|[_\s-])\w/g, match => match.toUpperCase());
-const runStatus = (status: string): Experiment['status'] => status === 'RUNNING' || status === 'PENDING' ? 'Running' : status === 'FAILED' || status === 'CANCELLED' ? 'Failed' : status.startsWith('COMPLETED') ? 'Completed' : 'Draft';
+const runStatus = (status: string): Experiment['status'] => ({ RUNNING: 'Running', PENDING: 'Pending', FAILED: 'Failed', CANCELLED: 'Cancelled', COMPLETED: 'Completed', COMPLETED_WITH_ERRORS: 'Completed with errors' } as Record<string, Experiment['status']>)[status] || 'Draft';
 
 const toExperiment = (run: any, logical: any, actor: string): Experiment => {
-  const latencies = (run.cases || []).map((item: any) => Number(item.trace?.total_latency?.value) / 1000).filter(Number.isFinite);
-  const stageLatency = (stages: string[]) => (run.cases || []).flatMap((item: any) => Object.values(item.trace?.stages || {}) as any[]).filter((stage: any) => stages.includes(stage.stage)).map((stage: any) => Number(stage.latency?.value) / 1000).filter(Number.isFinite);
-  const invocations = (run.cases || []).flatMap((item: any) => item.trace?.invocations || []);
+  const latencies = (run.cases || []).map((item: any) => numeric(item.trace?.total_latency?.value) / 1000).filter(Number.isFinite);
+  const stageLatency = (stages: string[]) => (run.cases || []).flatMap((item: any) => Object.values(item.trace?.stages || {}) as any[]).filter((stage: any) => stages.includes(stage.stage)).map((stage: any) => numeric(stage.latency?.value) / 1000).filter(Number.isFinite);
+  const invocations = (run.cases || []).flatMap((item: any) => item.trace?.invocations || []).filter((item: any) => item.category === 'APPLICATION_EXECUTION_COST');
   const tokens = invocations.reduce((sum: number, invocation: any) => sum + Number(invocation.input_tokens || 0) + Number(invocation.output_tokens || 0), 0);
-  const costs = (run.cases || []).map((item: any) => Number(item.trace?.costs?.APPLICATION_EXECUTION_COST?.value)).filter(Number.isFinite);
+  const costs = (run.cases || []).map((item: any) => numeric(item.trace?.costs?.APPLICATION_EXECUTION_COST?.value)).filter(Number.isFinite);
   const config = run.effective_configuration?.values || {};
   const retrieval = config.retrieval || {};
   const topK = retrieval.dense?.top_k || retrieval.final_top_k;
@@ -64,7 +72,7 @@ export function hydrateWorkspaceData(snapshot: WorkspaceSnapshot) {
     startedAt: item.created_at, author: snapshot.user.username,
   }));
   mockExperiments = [...drafts, ...runViews];
-  mockModels = snapshot.models.map(model => ({ id: model.id, name: model.model, provider: model.provider, model: model.model_revision ? `${model.model}@${model.model_revision}` : model.model, role: (model.roles || []).map(titleCase).join(', '), status: model.enabled ? 'Healthy' : 'Configuring', isDefault: false, usedByCount: 0, updatedAt: `revision ${model.revision}` }));
+  mockModels = snapshot.models.map(model => ({ id: model.id, name: model.model, provider: model.provider, model: model.model_revision ? `${model.model}@${model.model_revision}` : model.model, role: (model.roles || []).map(titleCase).join(', '), status: model.enabled ? 'Enabled' : 'Disabled', isDefault: false, usedByCount: 0, updatedAt: `revision ${model.revision}` }));
   mockJudgeProfiles = snapshot.models.filter(model => (model.roles || []).includes('JUDGE')).map(model => ({ id: model.id, name: model.model, model: model.model, temperature: 0, rubricDescription: 'Configured evaluation judge registration.' }));
   mockAdapters = snapshot.adapters.map(adapter => ({ id: adapter.id, name: adapter.id, type: adapter.kind, endpoint: adapter.endpoint || 'Local Python registration', healthStatus: 'Configured', lastVerified: 'Not probed', experimentsUsedIn: 0, requestMapping: { promisedStages: adapter.promised_stages || [] }, responseMapping: { providesAnswer: adapter.provides_answer }, timeoutSeconds: adapter.timeout_seconds, retryCount: 0 }));
 }
