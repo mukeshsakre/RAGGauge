@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from ragguage.contracts import *
-from ragguage.judges import evaluate_judge
+from src.contracts import *
+from src.judges import evaluate_judge
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ def test_real_ragas_contract_with_mocked_model_score(monkeypatch, name, cls):
     collections = pytest.importorskip("ragas.metrics.collections")
     import numpy as np
 
-    import ragguage.pipeline as pipeline
+    import src.pipeline as pipeline
 
     monkeypatch.setattr(
         pipeline, "LocalEncoder", lambda config: lambda texts: np.ones((len(texts), 3))

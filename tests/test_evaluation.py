@@ -2,9 +2,9 @@ import math
 
 import pytest
 
-from ragguage.contracts import *
-from ragguage.fixtures import ten_case_fixture
-from ragguage.metrics import *
+from src.contracts import *
+from src.fixtures import ten_case_fixture
+from src.metrics import *
 
 
 def test_hand_calculated_ten_case_fixture():

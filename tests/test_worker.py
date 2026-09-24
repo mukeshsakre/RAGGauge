@@ -1,7 +1,7 @@
-from ragguage.adapters import PYTHON_ADAPTERS, AdapterRegistration
-from ragguage.contracts import *
-from ragguage.storage import Store
-from ragguage.worker import enqueue, jobs, run_once
+from src.adapters import PYTHON_ADAPTERS, AdapterRegistration
+from src.contracts import *
+from src.storage import Store
+from src.worker import enqueue, jobs, run_once
 
 
 def test_external_worker_failure_isolation_and_persisted_snapshots():

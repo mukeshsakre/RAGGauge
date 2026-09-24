@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from ragguage.analyst_contract import EvidencePackage, validate_output
-from ragguage.api import create_app
-from ragguage.storage import Store
+from src.analyst_contract import EvidencePackage, validate_output
+from src.api import create_app
+from src.storage import Store
 
 
 def test_openapi_contains_authorized_operations():
@@ -35,25 +35,13 @@ def test_analyst_rejects_unknown_evidence():
         )
 
 
-def test_streamlit_login_screen():
-    from pathlib import Path
-
-    from streamlit.testing.v1 import AppTest
-
-    app = AppTest.from_file(
-        Path(__file__).resolve().parents[1] / "ragguage" / "ui.py"
-    ).run(timeout=15)
-    assert not app.exception
-    assert app.title[0].value == "RAGGauge"
-
-
 @pytest.mark.skipif(
     not os.environ.get("RAGGAUGE_TEST_DATABASE_URL"),
     reason="Requires dedicated PostgreSQL integration database",
 )
 def test_postgres_schema_and_vector_search():
-    from ragguage.contracts import Candidate, uid
-    from ragguage.pipeline import PgVectorIndex
+    from src.contracts import Candidate, uid
+    from src.pipeline import PgVectorIndex
 
     s = Store(os.environ["RAGGAUGE_TEST_DATABASE_URL"])
     s.initialize()

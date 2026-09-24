@@ -2,10 +2,10 @@
 
 import pytest
 
-from ragguage.analysis import compare
-from ragguage.contracts import *
-from ragguage.diagnosis import RULES, diagnose
-from ragguage.fixtures import ten_case_fixture
+from src.analysis import compare
+from src.contracts import *
+from src.diagnosis import RULES, diagnose
+from src.fixtures import ten_case_fixture
 
 
 def add_stage(run, stage, parent=None, context=None, evidence=None):

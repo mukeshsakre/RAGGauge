@@ -1,12 +1,12 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from ragguage.api import create_app
-from ragguage.configuration import resolve
-from ragguage.contracts import Experiment
-from ragguage.fixtures import ten_case_fixture
-from ragguage.service import analyze, suggested_draft
-from ragguage.storage import Conflict, Forbidden, Store
+from src.api import create_app
+from src.configuration import resolve
+from src.contracts import Experiment
+from src.fixtures import ten_case_fixture
+from src.service import analyze, suggested_draft
+from src.storage import Conflict, Forbidden, Store
 
 
 @pytest.fixture

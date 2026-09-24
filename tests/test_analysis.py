@@ -1,10 +1,10 @@
 import pytest
 
-from ragguage.analysis import *
-from ragguage.contracts import *
-from ragguage.diagnosis import RULES, diagnose
-from ragguage.fixtures import ten_case_fixture
-from ragguage.objectives import select_evaluated
+from src.analysis import *
+from src.contracts import *
+from src.diagnosis import RULES, diagnose
+from src.fixtures import ten_case_fixture
+from src.objectives import select_evaluated
 
 
 def test_paired_population_and_slices():

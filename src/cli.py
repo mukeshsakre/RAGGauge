@@ -2,8 +2,31 @@ import argparse
 import getpass
 import os
 from pathlib import Path
+from urllib.parse import quote
 
 from .storage import Store
+
+
+def database_url() -> str | None:
+    """Resolve local bootstrap connection settings without exposing them to records."""
+    if url := os.environ.get("RAGGAUGE_DATABASE_URL"):
+        return url
+    values = dict(os.environ)
+    env_file = Path.cwd() / ".env"
+    if env_file.is_file():
+        for raw in env_file.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            values.setdefault(key.strip(), value.strip().strip("'\""))
+    if url := values.get("RAGGAUGE_DATABASE_URL"):
+        return url
+    if password := values.get("RAGGAUGE_POSTGRES_PASSWORD"):
+        host = values.get("RAGGAUGE_POSTGRES_HOST", "127.0.0.1")
+        port = values.get("RAGGAUGE_POSTGRES_PORT", "5432")
+        return f"postgresql+psycopg://ragguage:{quote(password, safe='')}@{host}:{port}/ragguage"
+    return None
 
 
 def main():
@@ -38,10 +61,10 @@ def main():
         )
         print(f"Created {path.resolve()} and structured JSON; no model calls")
         return
-    url = os.environ.get("RAGGAUGE_DATABASE_URL")
+    url = database_url()
     if not url:
         parser.error(
-            "Set RAGGAUGE_DATABASE_URL to the local PostgreSQL connection URL (bootstrap only)"
+            "Set RAGGAUGE_DATABASE_URL or RAGGAUGE_POSTGRES_PASSWORD in the environment or local .env file"
         )
     store = Store(url)
     if args.command == "init":

@@ -1,7 +1,7 @@
 import pytest
 
-from ragguage.contracts import *
-from ragguage.pipeline import *
+from src.contracts import *
+from src.pipeline import *
 
 
 def test_source_preserving_chunks_and_rechunk_identity():
