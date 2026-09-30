@@ -1,6 +1,0 @@
-{
-  "name": "RAGGauge",
-  "description": "RAG Evaluation & Benchmarking Platform for comparing, diagnosing, and improving Retrieval-Augmented Generation systems.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
-}

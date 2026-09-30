@@ -1,98 +1,96 @@
-# RAGGauge
+# Ragguage
 
-Local RAG evaluation, paired comparisons, deterministic regression diagnosis and
-reviewable experiment recommendations. The design is in [PLAN.md](PLAN.md).
+Ragguage is a local control plane for evaluating RAG systems as versioned experiments instead of one-off prompts. It runs or imports RAG traces, scores them case by case, compares baseline and candidate runs, and preserves the evidence needed to explain regressions.
 
-## Deterministic demo
+It is useful when a team needs to know not just whether a RAG change moved a metric, but where the movement appeared: retrieval, reranking, context assembly, generation, evaluation coverage, latency, or cost.
 
-Python 3.11+ supports the core; Python 3.12 is recommended for optional ML packages.
+## Core Idea
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[test]"
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m src.cli fixture --output comparison.html
+Ragguage treats RAG evaluation as an evidence graph. Datasets, corpora, experiments, runs, traces, metrics, artifacts, comparisons, diagnoses, and recommendations are stored as immutable records, while platform and workspace configuration are versioned separately.
+
+That makes it more than a basic RAG demo or LLM wrapper: the implemented path can compare two terminal runs, compute paired metric deltas, detect instrumentation/evidence loss, localize likely regression stages, and propose controlled follow-up experiments from the observed configuration diff.
+
+## How It Works
+
+```mermaid
+flowchart TD
+    A[Dataset and optional corpus] --> B[Experiment configuration]
+    B --> C{Execution source}
+    C -->|Built-in lab| D[Chunk, retrieve, rerank, assemble context, optionally generate]
+    C -->|External adapter or imported traces| E[Normalize trace evidence]
+    D --> F[Evaluate each case]
+    E --> F
+    F --> G[Persist run, cases, traces, metrics, artifacts]
+    G --> H[Compare baseline vs candidate]
+    H --> I[Config diff, paired deltas, observations]
+    I --> J[Deterministic diagnosis and recommendations]
+    J --> K[API, React console, HTML and CSV reports]
 ```
 
-The demo writes standalone HTML and JSON using ten labeled retrieval cases. It
-makes no model calls and does not fabricate judge scores.
+## Key Capabilities
 
-## Local application
+- Authenticated FastAPI control plane with users, sessions, role checks, health endpoints, and audit-backed configuration changes.
+- Durable experiment execution queue with cancellation and explicit interrupted-job recovery that does not replay provider calls automatically.
+- Built-in local pipeline lab with source-preserving chunking, dense pgvector retrieval, BM25 lexical retrieval, reciprocal rank fusion, optional reranking, context assembly, and optional OpenAI-compatible chat generation.
+- Evaluation over built-in runs, external adapters, or imported normalized traces using deterministic retrieval metrics plus optional judge-backed quality metrics.
+- Baseline/candidate comparison with paired deltas, bootstrap confidence intervals, quality-gate changes, operational observations, evidence references, and deterministic regression diagnosis.
+- React/Vite console for datasets, experiments, jobs, comparisons, recommendations, settings, adapters, and models.
 
-PostgreSQL is required. SQLite is used only in isolated tests. Put
-`RAGGAUGE_POSTGRES_PASSWORD` in the repository-local `.env`; Docker Compose and the
-CLI both resolve it locally. `RAGGAUGE_DATABASE_URL` may override the generated local
-URL when using another PostgreSQL instance. These are bootstrap credentials;
-application configuration is database-managed.
+## Tech Stack
+
+| Layer | Implemented with |
+| --- | --- |
+| Backend | Python 3.11+, FastAPI, Pydantic, SQLAlchemy, Uvicorn |
+| Persistence | PostgreSQL, pgvector, Alembic migration files |
+| RAG lab | sentence-transformers, pgvector, bm25s, optional cross-encoder reranking, httpx chat-completions calls |
+| Evaluation | NumPy, deterministic ranking metrics, optional RAGAS/OpenAI/LangChain dependencies in the `lab` extra |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS, Recharts, lucide-react |
+| Testing | pytest, Ruff, Playwright |
+
+## Repository Structure
+
+| Path | Purpose |
+| --- | --- |
+| `src/` | Backend API, CLI, storage, worker, pipeline lab, evaluation, comparison, diagnosis, reports, and contracts. |
+| `app/` | Current React/Vite web console and Playwright integration tests. |
+| `tests/` | Python tests for API/storage, pipeline behavior, metrics, worker flow, analysis, and integrations. |
+| `migrations/` | Alembic environment and foundation migration. |
+| `app-old/` | Older UI snapshot kept in the repository; not used by the current quick start. |
+
+## Quick Start
+
+Prerequisites: Docker, Python 3.11+, `uv`, and Node.js/npm.
 
 ```powershell
+$env:RAGGAUGE_POSTGRES_PASSWORD = "change-me-local-password"
 docker compose up -d
-.\.venv\Scripts\python.exe -m alembic upgrade head
-.\.venv\Scripts\python.exe -m src.cli init
-.\.venv\Scripts\python.exe -m src.cli create-admin
-.\.venv\Scripts\python.exe -m src.cli serve
+uv sync --extra lab
+uv run ragguage init
+uv run ragguage create-admin
+uv run ragguage serve
 ```
 
-In separate terminals:
+In a second terminal, start the durable worker:
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.cli worker
-Set-Location app
-npm install
+$env:RAGGAUGE_POSTGRES_PASSWORD = "change-me-local-password"
+uv run ragguage worker
+```
+
+In a third terminal, start the web console:
+
+```powershell
+cd app
+npm ci
 npm run dev
 ```
 
-API docs: `http://127.0.0.1:8000/docs`. UI: `http://localhost:8501`. The UI uses
-the React/Vite application in `app/` and each user's bearer session, not a shared
-administrator credential. Vite proxies `/api` to the local FastAPI service. The API
-uses no authentication cookies. Do not expose the local deployment publicly.
+Open `http://127.0.0.1:8501`. Vite proxies `/api` to `http://127.0.0.1:8000` by default; set `RAGGAUGE_API_PROXY_TARGET` before `npm run dev` if the API runs elsewhere.
 
-`python -m src.cli demo` prompts for login and stores the fixture comparison.
-Duplicate immutable fixture IDs are rejected if imported a second time.
-
-## Workflow
-
-1. Admin sets platform/workspace capabilities and approved model roles.
-2. Import a DatasetVersion and, for the lab, a text CorpusVersion.
-3. Create an experiment; import normalized traces or queue a pipeline run.
-4. Compare terminal runs on the same dataset. Inspect denominators, stage deltas,
-   configuration changes, affected cases and confidence factors.
-5. Define objective measures/constraints for an evaluated-run recommendation.
-6. Preview and confirm suggested experiment creation. Running is a separate action.
-
-The schemas in the API and `src.fixtures.ten_case_fixture` demonstrate dataset,
-trace and configuration formats. Trace import accepts an object keyed by case ID.
-
-## Optional lab and judges
+For a no-database smoke artifact:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -e ".[lab]"
+uv run ragguage fixture
 ```
 
-The lab supports source-preserving fixed/sliding/recursive/semantic chunking,
-Sentence Transformers embeddings/cross-encoder reranking, exact pgvector cosine
-search, BM25S and RRF. First neural-model use may download weights. Ragas is an
-optional judge adapter. Endpoints and model roles use admin registrations;
-credentials resolve at runtime. Unknown tokens/cost remain missing, not zero.
-
-Python adapters are explicitly registered in the server's `PYTHON_ADAPTERS` registry.
-HTTP adapters are administrator-registered endpoints returning NormalizedTrace.
-Partial evidence is supported, with ineligible metrics reported explicitly.
-
-## Reliability and validation
-
-Configuration updates create immutable revisions/audit events; stale edits fail.
-Worker jobs checkpoint completed cases. After confirming an interrupted worker has
-stopped, `python -m src.cli recover` preserves completed evidence and marks
-unfinished work interrupted; it does not replay charged calls. Judge errors do
-not discard retrieval results. Confidence is heuristic, not proof of causality.
-
-Tests cover deterministic logic, BM25, contracts, API permissions, transactions
-in an isolated SQLite harness and worker isolation. PostgreSQL/pgvector tests use
-`RAGGAUGE_TEST_DATABASE_URL`, which must reference a dedicated test database.
-Provider/model tests need their optional dependencies and appropriate credentials.
-See [UI test instructions](app/README.md#verification) for the browser regression
-suite, including real API/worker flows against an isolated test database.
-
-LLM analyst execution, critics, multi-judge execution, autonomous optimization and
-deployment remain explicitly deferred.
+That command writes a fixture comparison HTML file and matching JSON without model calls.
